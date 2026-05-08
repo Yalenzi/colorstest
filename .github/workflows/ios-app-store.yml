@@ -150,9 +150,9 @@ jobs:
           EOF
           plutil -lint "$RUNNER_TEMP/ExportOptions.plist"
 
-      - name: Update Xcode project with Provisioning Profile
+      - name: Update Xcode project with Provisioning Profile and Certificate Identity
         run: |
-          sed -i '' "s/DEVELOPMENT_TEAM = B4S7M6N5U5;/DEVELOPMENT_TEAM = B4S7M6N5U5;\n\t\t\t\tPROVISIONING_PROFILE_SPECIFIER = \"${{ steps.profile.outputs.name }}\";/g" ios/Runner.xcodeproj/project.pbxproj
+          sed -i '' "s/DEVELOPMENT_TEAM = B4S7M6N5U5;/DEVELOPMENT_TEAM = B4S7M6N5U5;\n\t\t\t\tPROVISIONING_PROFILE_SPECIFIER = \"${{ steps.profile.outputs.name }}\";\n\t\t\t\tCODE_SIGN_IDENTITY = \"Apple Distribution\";\n\t\t\t\t\"CODE_SIGN_IDENTITY[sdk=iphoneos*]\" = \"Apple Distribution\";/g" ios/Runner.xcodeproj/project.pbxproj
 
       - name: Build IPA
         run: |
