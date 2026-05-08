@@ -30,7 +30,6 @@ class TestResultPage extends ConsumerWidget {
             onPressed: () {
               // TODO: Implement share functionality
             },
-            tooltip: l10n.share,
           ),
         ],
       ),
@@ -135,22 +134,7 @@ class TestResultContent extends StatelessWidget {
                 value: testResult.notes!,
               ),
             ],
-            if (testResult.references?.isNotEmpty ?? false) ...[
-              const SizedBox(height: 24),
-              Text(
-                l10n.references,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 8),
-              ...testResult.references!.map(
-                (reference) => Padding(
-                  padding: const EdgeInsets.only(bottom: 8.0),
-                  child: Text(reference, style: theme.textTheme.bodyMedium),
-                ),
-              ),
-            ],
+
             const SizedBox(height: 24),
             Center(
               child: ElevatedButton.icon(
