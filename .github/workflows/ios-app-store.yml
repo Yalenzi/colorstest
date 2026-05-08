@@ -150,6 +150,10 @@ jobs:
           EOF
           plutil -lint "$RUNNER_TEMP/ExportOptions.plist"
 
+      - name: Update Xcode project with Provisioning Profile
+        run: |
+          sed -i '' "s/DEVELOPMENT_TEAM = B4S7M6N5U5;/DEVELOPMENT_TEAM = B4S7M6N5U5;\n\t\t\t\tPROVISIONING_PROFILE_SPECIFIER = \"${{ steps.profile.outputs.name }}\";/g" ios/Runner.xcodeproj/project.pbxproj
+
       - name: Build IPA
         run: |
           flutter build ipa \
