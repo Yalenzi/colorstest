@@ -69,7 +69,6 @@ ios/Pods/
 ios/.last_build_id
 ios/DerivedData/
 *.txt
-*.png
 *.sh
 .!*
 
