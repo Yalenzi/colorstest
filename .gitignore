@@ -52,3 +52,24 @@ app.*.map.json
 api_keys.txt
 secrets.dart
 run_with_api_key.sh
+
+# Web dependencies
+node_modules/
+.npm/
+
+# Build artifacts
+*.apk
+*.ipa
+*.app
+*.p12
+*.p8
+*.mobileprovision
+build/
+ios/Pods/
+ios/.last_build_id
+ios/DerivedData/
+*.txt
+*.png
+*.sh
+.!*
+

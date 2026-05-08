@@ -59,6 +59,7 @@ jobs:
         run: |
           cd ios
           pod repo update
+          rm -f Podfile.lock
 
       - name: Restore Firebase iOS config
         env:

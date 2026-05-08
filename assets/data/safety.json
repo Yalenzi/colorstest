@@ -1,0 +1,521 @@
+{
+  "Marquis Test": {
+    "safetyLevel": "HIGH",
+    "requiredEquipment": ["Safety goggles", "Chemical-resistant gloves", "Lab coat", "Fume hood"],
+    "handlingProcedures": [
+      "Always work in a well-ventilated area or fume hood.",
+      "Add reagents one drop at a time.",
+      "Never mix reagents directly — apply separately to sample.",
+      "Neutralise spills immediately with sodium bicarbonate solution."
+    ],
+    "specificHazards": [
+      "Concentrated sulfuric acid causes severe chemical burns.",
+      "Formaldehyde is a known carcinogen — minimise inhalation.",
+      "Violent reaction possible if reagents contact water suddenly."
+    ],
+    "storageRequirements": [
+      "Store in a cool, dark location away from bases.",
+      "Keep containers tightly sealed when not in use.",
+      "Separate from flammable materials."
+    ]
+  },
+  "Mecke Test": {
+    "safetyLevel": "HIGH",
+    "requiredEquipment": ["Safety goggles", "Chemical-resistant gloves", "Lab coat", "Fume hood"],
+    "handlingProcedures": [
+      "Work in a ventilated area at all times.",
+      "Avoid skin and eye contact with selenious acid.",
+      "Use ceramic or glass spot plates only."
+    ],
+    "specificHazards": [
+      "Selenious acid is highly toxic if ingested or inhaled.",
+      "Concentrated sulfuric acid is severely corrosive.",
+      "May produce toxic selenium dioxide fumes."
+    ],
+    "storageRequirements": [
+      "Store separately from reducing agents.",
+      "Keep in original labelled containers.",
+      "Dispose of waste via approved hazardous chemical channels."
+    ]
+  },
+  "Ferric Sulfate Test": {
+    "safetyLevel": "MEDIUM",
+    "requiredEquipment": ["Safety goggles", "Lab gloves", "Lab coat"],
+    "handlingProcedures": [
+      "Prepare reagent solution under a fume hood.",
+      "Use a glass rod — do not use metal implements.",
+      "Avoid ingestion; wash hands after use."
+    ],
+    "specificHazards": [
+      "Ferric sulfate is an irritant to skin and eyes.",
+      "Solution is slightly acidic — avoid prolonged skin contact."
+    ],
+    "storageRequirements": [
+      "Store in a cool, dry location.",
+      "Keep away from reducing agents and alkalis."
+    ]
+  },
+  "Nitric Acid Test": {
+    "safetyLevel": "EXTREME",
+    "requiredEquipment": ["Full face shield", "Heavy-duty acid-resistant gloves", "Lab coat", "Fume hood mandatory"],
+    "handlingProcedures": [
+      "ONLY handle inside a fume hood.",
+      "Never add water to acid — always add acid to water.",
+      "Have a neutralising agent (sodium bicarbonate) ready at all times.",
+      "Use minimal amounts of concentrated nitric acid."
+    ],
+    "specificHazards": [
+      "Concentrated nitric acid causes severe chemical burns.",
+      "Produces toxic nitrogen dioxide (NO₂) gas.",
+      "May react violently with organic materials causing fire."
+    ],
+    "storageRequirements": [
+      "Store in a dedicated acid cabinet with ventilation.",
+      "Keep away from combustible and reducing materials.",
+      "Never store in a refrigerator with other chemicals."
+    ]
+  },
+  "Fast Blue B Salt Test": {
+    "safetyLevel": "HIGH",
+    "requiredEquipment": ["Safety goggles", "Chemical-resistant gloves", "Lab coat", "Fume hood"],
+    "handlingProcedures": [
+      "Handle chloroform only in a fume hood.",
+      "Avoid breathing chloroform vapours.",
+      "Mix Fast Blue B salt in a dry environment."
+    ],
+    "specificHazards": [
+      "Chloroform is a suspected carcinogen and CNS depressant.",
+      "Fast Blue B Salt is toxic by skin absorption and inhalation.",
+      "Sodium hydroxide solution is caustic."
+    ],
+    "storageRequirements": [
+      "Store chloroform in a sealed container away from light.",
+      "Keep Fast Blue B Salt desiccated and sealed.",
+      "Separate from oxidisers."
+    ]
+  },
+  "Duquenois-Levine Test": {
+    "safetyLevel": "MEDIUM",
+    "requiredEquipment": ["Safety goggles", "Lab gloves", "Lab coat", "Fume hood"],
+    "handlingProcedures": [
+      "Avoid inhaling ethanol vapours.",
+      "Add hydrochloric acid carefully — it is fuming.",
+      "Chloroform must be handled in a fume hood."
+    ],
+    "specificHazards": [
+      "Concentrated hydrochloric acid produces corrosive HCl fumes.",
+      "Chloroform is a suspected carcinogen.",
+      "Acetaldehyde is highly flammable."
+    ],
+    "storageRequirements": [
+      "Store all components separately in a ventilated cabinet.",
+      "Keep away from ignition sources.",
+      "Chloroform: dark, cool location."
+    ]
+  },
+  "Cobalt Thiocyanate Test": {
+    "safetyLevel": "HIGH",
+    "requiredEquipment": ["Safety goggles", "Chemical-resistant gloves", "Lab coat"],
+    "handlingProcedures": [
+      "Prepare reagent in a well-ventilated area.",
+      "Avoid inhalation of cobalt thiocyanate dust.",
+      "Wash hands thoroughly after handling."
+    ],
+    "specificHazards": [
+      "Cobalt compounds are suspected carcinogens.",
+      "Hydrochloric acid is corrosive and produces fumes.",
+      "Solution is an irritant to mucous membranes."
+    ],
+    "storageRequirements": [
+      "Store in a dark, cool location.",
+      "Keep solutions in sealed glass containers."
+    ]
+  },
+  "Modified Cobalt Thiocyanate (Scott Test)": {
+    "safetyLevel": "HIGH",
+    "requiredEquipment": ["Safety goggles", "Chemical-resistant gloves", "Lab coat", "Fume hood"],
+    "handlingProcedures": [
+      "Add hydrochloric acid one drop at a time.",
+      "Handle chloroform in a fume hood only.",
+      "Observe colour changes promptly and record."
+    ],
+    "specificHazards": [
+      "Chloroform is a suspected carcinogen.",
+      "Cobalt compounds pose a long-term health risk.",
+      "Hydrochloric acid fumes are corrosive to the respiratory tract."
+    ],
+    "storageRequirements": [
+      "Store chloroform separately from hydrochloric acid.",
+      "All components in a ventilated, secure cabinet."
+    ]
+  },
+  "Methyl Benzoate Test": {
+    "safetyLevel": "HIGH",
+    "requiredEquipment": ["Safety goggles", "Lab gloves", "Lab coat", "Fume hood"],
+    "handlingProcedures": [
+      "Carry out test in a fume hood.",
+      "Avoid ingesting potassium hydroxide solution.",
+      "Shake gently — avoid aerosol formation."
+    ],
+    "specificHazards": [
+      "Potassium hydroxide is highly caustic.",
+      "Methanol is toxic by ingestion and inhalation.",
+      "Methyl benzoate vapours may cause headaches."
+    ],
+    "storageRequirements": [
+      "Store potassium hydroxide away from moisture.",
+      "Keep methanol in a flammables cabinet."
+    ]
+  },
+  "Wagner Test": {
+    "safetyLevel": "MEDIUM",
+    "requiredEquipment": ["Safety goggles", "Lab gloves", "Lab coat"],
+    "handlingProcedures": [
+      "Handle iodine solution with care — it stains.",
+      "Avoid skin contact with potassium iodide solution.",
+      "Dispose of iodine-containing waste properly."
+    ],
+    "specificHazards": [
+      "Iodine vapours are irritating to the respiratory tract.",
+      "Solution will stain skin and surfaces permanently."
+    ],
+    "storageRequirements": [
+      "Store iodine solution in a dark glass bottle.",
+      "Keep away from reducing agents."
+    ]
+  },
+  "Simon Test": {
+    "safetyLevel": "HIGH",
+    "requiredEquipment": ["Safety goggles", "Lab gloves", "Lab coat", "Fume hood"],
+    "handlingProcedures": [
+      "Mix reagents on a spot plate — do not mix in bulk.",
+      "Keep acetaldehyde away from ignition sources.",
+      "Discard waste containing nitroprusside via approved channels."
+    ],
+    "specificHazards": [
+      "Sodium nitroprusside decomposes to release cyanide when acidified.",
+      "Acetaldehyde is highly flammable.",
+      "Sodium carbonate is a mild irritant."
+    ],
+    "storageRequirements": [
+      "Store nitroprusside solution in the dark and refrigerated.",
+      "Keep acetaldehyde in a sealed container in a flammables cabinet."
+    ]
+  },
+  "Simon Test with Acetone": {
+    "safetyLevel": "HIGH",
+    "requiredEquipment": ["Safety goggles", "Lab gloves", "Lab coat"],
+    "handlingProcedures": [
+      "Keep acetone away from all ignition sources.",
+      "Work in a ventilated area.",
+      "Mix reagents fresh before use."
+    ],
+    "specificHazards": [
+      "Acetone is highly flammable.",
+      "Sodium nitroprusside may release cyanide in acidic conditions."
+    ],
+    "storageRequirements": [
+      "Store acetone in a flammables cabinet.",
+      "Keep nitroprusside solution refrigerated and away from light."
+    ]
+  },
+  "Ehrlich Test": {
+    "safetyLevel": "MEDIUM",
+    "requiredEquipment": ["Safety goggles", "Lab gloves", "Lab coat", "Fume hood"],
+    "handlingProcedures": [
+      "Use concentrated hydrochloric acid only in a fume hood.",
+      "p-DMAB may cause skin sensitisation — minimise contact.",
+      "Allow the test to develop in an undisturbed area."
+    ],
+    "specificHazards": [
+      "Concentrated hydrochloric acid is corrosive.",
+      "4-DMAB (p-dimethylaminobenzaldehyde) is an irritant.",
+      "Ethanol in reagent is a fire hazard."
+    ],
+    "storageRequirements": [
+      "Store reagent in a dark glass bottle, refrigerated.",
+      "Keep away from heat and light."
+    ]
+  },
+  "Liebermann Test": {
+    "safetyLevel": "HIGH",
+    "requiredEquipment": ["Safety goggles", "Acid-resistant gloves", "Lab coat", "Fume hood"],
+    "handlingProcedures": [
+      "Handle concentrated sulfuric acid with extreme care.",
+      "Never add large amounts of sodium nitrite at once.",
+      "Work in a fume hood at all times."
+    ],
+    "specificHazards": [
+      "Concentrated sulfuric acid causes severe burns.",
+      "Sodium nitrite is oxidising and toxic.",
+      "Reaction may produce nitrogen oxides (NO₂)."
+    ],
+    "storageRequirements": [
+      "Store acid in a corrosive materials cabinet.",
+      "Keep sodium nitrite away from acids and combustibles."
+    ]
+  },
+  "Mandelin Test": {
+    "safetyLevel": "HIGH",
+    "requiredEquipment": ["Safety goggles", "Acid-resistant gloves", "Lab coat", "Fume hood"],
+    "handlingProcedures": [
+      "Dissolve ammonium vanadate in acid VERY carefully.",
+      "Add acid to the solid in small portions.",
+      "Test on spot plate — never in bulk quantities."
+    ],
+    "specificHazards": [
+      "Ammonium vanadate is toxic by inhalation and ingestion.",
+      "Concentrated sulfuric acid causes severe chemical burns.",
+      "May produce vanadium pentoxide dust — a respiratory hazard."
+    ],
+    "storageRequirements": [
+      "Store vanadate in a sealed container in a ventilated cabinet.",
+      "Keep concentrated acid in a dedicated acid storage area."
+    ]
+  },
+  "Zimmermann Test": {
+    "safetyLevel": "MEDIUM",
+    "requiredEquipment": ["Safety goggles", "Lab gloves", "Lab coat"],
+    "handlingProcedures": [
+      "Handle 2,4-dinitrochlorobenzene with care — it is a skin sensitiser.",
+      "Prepare reagents in a fume hood.",
+      "Allow adequate development time before reading results."
+    ],
+    "specificHazards": [
+      "2,4-Dinitrochlorobenzene is a strong skin sensitiser and suspected carcinogen.",
+      "Potassium hydroxide in methanol is caustic.",
+      "Methanol is toxic by ingestion and inhalation."
+    ],
+    "storageRequirements": [
+      "Store dinitrochlorobenzene in a tightly sealed container.",
+      "Keep methanol in a flammables cabinet.",
+      "Store KOH/methanol solution refrigerated in a dark bottle."
+    ]
+  },
+  "Potassium Dichromate Test": {
+    "safetyLevel": "HIGH",
+    "requiredEquipment": ["Safety goggles", "Acid-resistant gloves", "Lab coat", "Fume hood"],
+    "handlingProcedures": [
+      "Handle concentrated sulfuric acid with extreme care.",
+      "Add potassium dichromate to acid carefully — avoid dust inhalation.",
+      "Work in a fume hood."
+    ],
+    "specificHazards": [
+      "Potassium dichromate is as toxic as it is oxidizing and is a suspected carcinogen.",
+      "Concentrated sulfuric acid causes severe chemical burns.",
+      "Reaction may release toxic chromium-containing aerosols."
+    ],
+    "storageRequirements": [
+      "Store dichromate separately from combustible materials.",
+      "Keep acid in a dedicated acid cabinet."
+    ]
+  },
+  "Chen-Kao Test": {
+    "safetyLevel": "MEDIUM",
+    "requiredEquipment": ["Safety goggles", "Lab gloves", "Lab coat"],
+    "handlingProcedures": [
+      "Avoid eye and skin contact with reagents.",
+      "Discard waste solutions according to local environmental regulations.",
+      "Prepare fresh solutions if possible."
+    ],
+    "specificHazards": [
+      "Copper(II) sulfate is an irritant and harmful if swallowed.",
+      "Sodium hydroxide solution is caustic and can cause burns.",
+      "Methanol/Ethanol vapors are flammable."
+    ],
+    "storageRequirements": [
+      "Keep sodium hydroxide in a tightly sealed container.",
+      "Store copper sulfate in a cool, dry location."
+    ]
+  },
+  "Nitric-Sulfuric Acid Test": {
+    "safetyLevel": "EXTREME",
+    "requiredEquipment": ["Full face shield", "Heavy-duty acid-resistant gloves", "Lab coat", "Fume hood mandatory"],
+    "handlingProcedures": [
+      "ONLY handle inside a fume hood.",
+      "Never add water to acid — always add acid to water.",
+      "Have a neutralising agent (sodium bicarbonate) ready at all times."
+    ],
+    "specificHazards": [
+      "Both nitric and sulfuric acids cause severe chemical burns.",
+      "Produces toxic nitrogen dioxide (NO₂) gas.",
+      "Reaction with sample may be highly exothermic."
+    ],
+    "storageRequirements": [
+      "Store in a dedicated acid cabinet with ventilation.",
+      "Separate from flammable and reducing materials."
+    ]
+  },
+  "Nitric Acid Test (Heroin)": {
+    "safetyLevel": "EXTREME",
+    "requiredEquipment": ["Face shield", "Acid-resistant gloves", "Lab coat", "Fume hood"],
+    "handlingProcedures": [
+      "Use only in a well-ventilated fume hood.",
+      "Minimize the volume of concentrated acid used.",
+      "Clean up spills immediately with appropriate neutralizers."
+    ],
+    "specificHazards": [
+      "Concentrated nitric acid causes severe burns.",
+      "Releases nitrogen dioxide gas, which is highly toxic when inhaled."
+    ],
+    "storageRequirements": [
+      "Keep in a secure acid storage cabinet.",
+      "Keep away from organic materials."
+    ]
+  },
+  "Nitric Acid Test (Morphine)": {
+    "safetyLevel": "EXTREME",
+    "requiredEquipment": ["Face shield", "Acid-resistant gloves", "Lab coat", "Fume hood"],
+    "handlingProcedures": [
+      "Handle only within an operating fume hood.",
+      "Wear full protective gear.",
+      "Ensure spill cleanup kits are adjacent."
+    ],
+    "specificHazards": [
+      "Severe corrosive nature of concentrated nitric acid.",
+      "Toxic gas emission during reactions."
+    ],
+    "storageRequirements": [
+      "Store in a ventilated safety cabinet.",
+      "Avoid contact with combustible substances."
+    ]
+  },
+  "Nitric Acid Test (Codeine)": {
+    "safetyLevel": "EXTREME",
+    "requiredEquipment": ["Face shield", "Acid-resistant gloves", "Lab coat", "Fume hood"],
+    "handlingProcedures": [
+      "Handle only within an operating fume hood.",
+      "Wear full protective gear.",
+      "Ensure spill cleanup kits are adjacent."
+    ],
+    "specificHazards": [
+      "Severe corrosive nature of concentrated nitric acid.",
+      "Toxic gas emission during reactions."
+    ],
+    "storageRequirements": [
+      "Store in a ventilated safety cabinet.",
+      "Avoid contact with combustible substances."
+    ]
+  },
+  "Dille-Koppanyi": {
+    "safetyLevel": "HIGH",
+    "requiredEquipment": ["Safety goggles", "Lab gloves", "Lab coat", "Fume hood"],
+    "handlingProcedures": [
+      "Work in a fume hood due to methanol and isopropylamine vapors.",
+      "Avoid inhalation and skin contact.",
+      "Ensure reagents are freshly prepared if possible."
+    ],
+    "specificHazards": [
+      "Isopropylamine is highly flammable and irritating.",
+      "Methanol is toxic if inhaled or ingested.",
+      "Cobalt salts are suspected carcinogens."
+    ],
+    "storageRequirements": [
+      "Store in flammables cabinet.",
+      "Keep reagents tightly sealed."
+    ]
+  },
+  "Gallic Acid Test": {
+    "safetyLevel": "EXTREME",
+    "requiredEquipment": ["Safety goggles", "Acid-resistant gloves", "Lab coat", "Fume hood"],
+    "handlingProcedures": [
+      "Handle concentrated sulfuric acid with extreme care.",
+      "Use minimum amounts of reagents.",
+      "Carry out the test on a spot plate in a fume hood."
+    ],
+    "specificHazards": [
+      "Severe burn hazard from concentrated sulfuric acid.",
+      "Potential for heat-generating reactions."
+    ],
+    "storageRequirements": [
+      "Store in an acid-safe cabinet.",
+      "Keep away from water and organic solvents."
+    ]
+  },
+  "Vitali-Morin": {
+    "safetyLevel": "HIGH",
+    "requiredEquipment": ["Safety goggles", "Lab gloves", "Lab coat", "Fume hood"],
+    "handlingProcedures": [
+      "Perform evaporation step carefully in a fume hood.",
+      "Avoid inhaling fuming nitric acid vapors.",
+      "Wear eye protection at all times during the procedure."
+    ],
+    "specificHazards": [
+      "Corrosive nature of fuming nitric acid and KOH solution.",
+      "Flammability of acetone.",
+      "Nitrogen oxide emissions during evaporation."
+    ],
+    "storageRequirements": [
+      "Store nitric acid in an acid cabinet.",
+      "Keep acetone in a flammables cabinet."
+    ]
+  },
+  "Sulfuric Acid Test": {
+    "safetyLevel": "EXTREME",
+    "requiredEquipment": ["Safety goggles", "Acid-resistant gloves", "Lab coat", "Fume hood"],
+    "handlingProcedures": [
+      "Handle concentrated sulfuric acid with extreme care.",
+      "Place smallest possible drop on sample.",
+      "Discard plate contents carefully after neutralizing."
+    ],
+    "specificHazards": [
+      "Concentrated sulfuric acid causes severe, immediate chemical burns.",
+      "Violent splattering if water is added to the acid."
+    ],
+    "storageRequirements": [
+      "Store in a dedicated acid cabinet.",
+      "Separate from metal powders and oxidizing agents."
+    ]
+  },
+  "Hydrochloric Acid Test": {
+    "safetyLevel": "HIGH",
+    "requiredEquipment": ["Safety goggles", "Lab gloves", "Lab coat", "Fume hood"],
+    "handlingProcedures": [
+      "Handle concentrated acid only in a fume hood.",
+      "Be careful not to inhale fuming HCl vapors.",
+      "Wear eye protection at all times."
+    ],
+    "specificHazards": [
+      "Hydrochloric acid is highly corrosive.",
+      "HCl vapors are irritating and can cause lung damage if inhaled in large amounts."
+    ],
+    "storageRequirements": [
+      "Store in a ventilated cabinet for corrosives.",
+      "Separate from oxidizing agents."
+    ]
+  },
+  "Froehde Test": {
+    "safetyLevel": "HIGH",
+    "requiredEquipment": ["Safety goggles", "Acid-resistant gloves", "Lab coat", "Fume hood"],
+    "handlingProcedures": [
+      "Prepare reagent by adding acid to ammonium molybdate slowly.",
+      "Mix thoroughly in a well-ventilated area.",
+      "Wear full protective gear."
+    ],
+    "specificHazards": [
+      "Molybdenum compounds are toxic.",
+      "Corrosive hazards from concentrated sulfuric acid."
+    ],
+    "storageRequirements": [
+      "Store in a secure cabinet for toxic and corrosive substances.",
+      "Keep tightly sealed."
+    ]
+  },
+  "Zwikker Test": {
+    "safetyLevel": "MEDIUM",
+    "requiredEquipment": ["Safety goggles", "Lab gloves", "Lab coat", "Fume hood"],
+    "handlingProcedures": [
+      "Handle pyridine inside a fume hood due to its strong, unpleasant odor.",
+      "Avoid ingestion of copper sulfate reagent.",
+      "Dispose of waste responsibly."
+    ],
+    "specificHazards": [
+      "Pyridine is flammable and toxic.",
+      "Copper salts are harmful to health and the environment."
+    ],
+    "storageRequirements": [
+      "Store reagents separately in cool, dry areas.",
+      "Pyridine: keep in flammables cabinet."
+    ]
+  }
+}
