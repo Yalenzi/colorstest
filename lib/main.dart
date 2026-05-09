@@ -34,7 +34,9 @@ void main() async {
 
     // Initialize Firebase with try/catch to show on screen if it fails
     try {
-      await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+      if (Firebase.apps.isEmpty) {
+        await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+      }
     } catch (e, stack) {
       runApp(MaterialApp(
         home: Scaffold(
