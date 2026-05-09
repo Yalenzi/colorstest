@@ -10,26 +10,80 @@ import 'features/reagent_testing/data/services/remote_config_service.dart';
 import 'core/utils/logger.dart';
 import 'firebase_options.dart';
 
+import 'dart:async';
+
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  runZonedGuarded(() async {
+    WidgetsFlutterBinding.ensureInitialized();
+    
+    // Set a custom ErrorWidget to show rendering errors
+    ErrorWidget.builder = (FlutterErrorDetails details) {
+      return Material(
+        child: Container(
+          color: Colors.red,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Text(
+              details.exceptionAsString() + '\n' + (details.stack?.toString() ?? ''),
+              style: const TextStyle(color: Colors.white, fontSize: 14),
+            ),
+          ),
+        ),
+      );
+    };
 
-  // Initialize Firebase
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+    // Initialize Firebase with try/catch to show on screen if it fails
+    try {
+      await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+    } catch (e, stack) {
+      runApp(MaterialApp(
+        home: Scaffold(
+          backgroundColor: Colors.red,
+          body: SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Text(
+                "Firebase Init Error:\n$e\n$stack",
+                style: const TextStyle(color: Colors.white, fontSize: 14),
+              ),
+            ),
+          ),
+        ),
+      ));
+      return;
+    }
 
-  // Initialize Remote Config FIRST to ensure API keys are available
-  try {
-    final remoteConfigService = RemoteConfigService();
-    await remoteConfigService.initialize();
-    Logger.info('✅ Remote Config initialized successfully in main()');
-  } catch (e) {
-    Logger.info('⚠️ Remote Config initialization failed in main(): $e');
-    // Continue without Remote Config - app will use fallbacks
-  }
+    // Initialize Remote Config FIRST to ensure API keys are available
+    try {
+      final remoteConfigService = RemoteConfigService();
+      await remoteConfigService.initialize();
+      Logger.info('✅ Remote Config initialized successfully in main()');
+    } catch (e) {
+      Logger.info('⚠️ Remote Config initialization failed in main(): $e');
+      // Continue without Remote Config - app will use fallbacks
+    }
 
-  // Configure dependencies (now Remote Config is ready)
-  await configureDependencies();
+    // Configure dependencies (now Remote Config is ready)
+    await configureDependencies();
 
-  runApp(const ProviderScope(child: ReagentTestingApp()));
+    runApp(const ProviderScope(child: ReagentTestingApp()));
+  }, (error, stack) {
+    // Catch any other uncaught errors and show them
+    runApp(MaterialApp(
+      home: Scaffold(
+        backgroundColor: Colors.red,
+        body: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Text(
+              "Uncaught App Error:\n$error\n$stack",
+              style: const TextStyle(color: Colors.white, fontSize: 14),
+            ),
+          ),
+        ),
+      ),
+    ));
+  });
 }
 
 class ReagentTestingApp extends ConsumerWidget {
