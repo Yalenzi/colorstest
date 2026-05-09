@@ -65,7 +65,7 @@ class DefaultFirebaseOptions {
     projectId: 'flutter-reagent-test',
     storageBucket: 'flutter-reagent-test.firebasestorage.app',
     iosClientId: '76342007759-lfrim4jh8fkntca1o7mlsvldaaqbomaa.apps.googleusercontent.com',
-    iosBundleId: 'com.example.reagentColorsTest',
+    iosBundleId: 'com.yousef.ctds',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
@@ -75,7 +75,7 @@ class DefaultFirebaseOptions {
     projectId: 'flutter-reagent-test',
     storageBucket: 'flutter-reagent-test.firebasestorage.app',
     iosClientId: '76342007759-lfrim4jh8fkntca1o7mlsvldaaqbomaa.apps.googleusercontent.com',
-    iosBundleId: 'com.example.reagentColorsTest',
+    iosBundleId: 'com.yousef.ctds',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
