@@ -60,21 +60,21 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyDpek992tVFKJe4OK5eLSvj1bAGqrl5Lmw',
-    appId: '1:76342007759:ios:585b35dec8e2e35b3164ba',
+    appId: '1:76342007759:ios:2842920a81dc24613164ba',
     messagingSenderId: '76342007759',
     projectId: 'flutter-reagent-test',
     storageBucket: 'flutter-reagent-test.firebasestorage.app',
-    iosClientId: '76342007759-lfrim4jh8fkntca1o7mlsvldaaqbomaa.apps.googleusercontent.com',
+    iosClientId: '76342007759-mon4usabeh4a93i12i48eq6maj5qcdm5.apps.googleusercontent.com',
     iosBundleId: 'com.yousef.ctds',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyDpek992tVFKJe4OK5eLSvj1bAGqrl5Lmw',
-    appId: '1:76342007759:ios:585b35dec8e2e35b3164ba',
+    appId: '1:76342007759:ios:2842920a81dc24613164ba',
     messagingSenderId: '76342007759',
     projectId: 'flutter-reagent-test',
     storageBucket: 'flutter-reagent-test.firebasestorage.app',
-    iosClientId: '76342007759-lfrim4jh8fkntca1o7mlsvldaaqbomaa.apps.googleusercontent.com',
+    iosClientId: '76342007759-mon4usabeh4a93i12i48eq6maj5qcdm5.apps.googleusercontent.com',
     iosBundleId: 'com.yousef.ctds',
   );
 

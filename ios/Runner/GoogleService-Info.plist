@@ -3,9 +3,11 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>76342007759-lfrim4jh8fkntca1o7mlsvldaaqbomaa.apps.googleusercontent.com</string>
+	<string>76342007759-mon4usabeh4a93i12i48eq6maj5qcdm5.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.76342007759-lfrim4jh8fkntca1o7mlsvldaaqbomaa</string>
+	<string>com.googleusercontent.apps.76342007759-mon4usabeh4a93i12i48eq6maj5qcdm5</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>76342007759-66eqab8cv3fbsumeijmdj1ahtj8vom93.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
 	<string>AIzaSyDpek992tVFKJe4OK5eLSvj1bAGqrl5Lmw</string>
 	<key>GCM_SENDER_ID</key>
@@ -13,7 +15,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.example.reagentColorsTest</string>
+	<string>com.yousef.ctds</string>
 	<key>PROJECT_ID</key>
 	<string>flutter-reagent-test</string>
 	<key>STORAGE_BUCKET</key>
@@ -29,6 +31,8 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:76342007759:ios:585b35dec8e2e35b3164ba</string>
+	<string>1:76342007759:ios:2842920a81dc24613164ba</string>
+	<key>DATABASE_URL</key>
+	<string>https://flutter-reagent-test-default-rtdb.firebaseio.com</string>
 </dict>
 </plist>
