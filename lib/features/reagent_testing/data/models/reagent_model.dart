@@ -12,6 +12,7 @@ class ReagentModel {
   final List<String> chemicals;
   final List<DrugResultModel> drugResults;
   final String category;
+  final List<String> references;
 
   const ReagentModel({
     required this.reagentName,
@@ -24,6 +25,7 @@ class ReagentModel {
     required this.chemicals,
     required this.drugResults,
     required this.category,
+    this.references = const [],
   });
 
   // Convert from JSON to Model
@@ -53,6 +55,7 @@ class ReagentModel {
           )
           .toList(),
       category: json['category'] as String? ?? 'Primary Tests',
+      references: List<String>.from(json['reference'] as List? ?? []),
     );
   }
 
@@ -71,7 +74,37 @@ class ReagentModel {
           .map((drugResult) => drugResult.toJson())
           .toList(),
       'category': category,
+      'reference': references,
     };
+  }
+
+  // Non-destructive copy with optional field overrides
+  ReagentModel copyWith({
+    String? reagentName,
+    String? reagentNameAr,
+    String? description,
+    String? descriptionAr,
+    String? safetyLevel,
+    String? safetyLevelAr,
+    int? testDuration,
+    List<String>? chemicals,
+    List<DrugResultModel>? drugResults,
+    String? category,
+    List<String>? references,
+  }) {
+    return ReagentModel(
+      reagentName:   reagentName   ?? this.reagentName,
+      reagentNameAr: reagentNameAr ?? this.reagentNameAr,
+      description:   description   ?? this.description,
+      descriptionAr: descriptionAr ?? this.descriptionAr,
+      safetyLevel:   safetyLevel   ?? this.safetyLevel,
+      safetyLevelAr: safetyLevelAr ?? this.safetyLevelAr,
+      testDuration:  testDuration  ?? this.testDuration,
+      chemicals:     chemicals     ?? this.chemicals,
+      drugResults:   drugResults   ?? this.drugResults,
+      category:      category      ?? this.category,
+      references:    references    ?? this.references,
+    );
   }
 
   // Convert Model to Entity
@@ -89,6 +122,7 @@ class ReagentModel {
           .map((drugResult) => drugResult.toEntity())
           .toList(),
       category: category,
+      references: references,
     );
   }
 
@@ -107,6 +141,7 @@ class ReagentModel {
           .map((drugResult) => DrugResultModel.fromEntity(drugResult))
           .toList(),
       category: entity.category,
+      references: entity.references,
     );
   }
 
@@ -123,7 +158,8 @@ class ReagentModel {
         other.testDuration == testDuration &&
         _listEquals(other.chemicals, chemicals) &&
         _listEquals(other.drugResults, drugResults) &&
-        other.category == category;
+        other.category == category &&
+        _listEquals(other.references, references);
   }
 
   @override
@@ -137,7 +173,8 @@ class ReagentModel {
         testDuration.hashCode ^
         chemicals.hashCode ^
         drugResults.hashCode ^
-        category.hashCode;
+        category.hashCode ^
+        references.hashCode;
   }
 
   bool _listEquals<T>(List<T> a, List<T> b) {
@@ -150,6 +187,9 @@ class ReagentModel {
 
   @override
   String toString() {
-    return 'ReagentModel(reagentName: $reagentName, description: $description, safetyLevel: $safetyLevel, testDuration: $testDuration, chemicals: $chemicals, drugResults: ${drugResults.length} results, category: $category)';
+    return 'ReagentModel(reagentName: $reagentName, description: $description, '
+        'safetyLevel: $safetyLevel, testDuration: $testDuration, '
+        'chemicals: $chemicals, drugResults: ${drugResults.length} results, '
+        'category: $category, references: ${references.length})';
   }
 }

@@ -72,6 +72,7 @@
     "safetyInformation": "معلومات السلامة",
     "chemicalComponents": "المكونات الكيميائية",
     "testInstructions": "تعليمات الاختبار",
+    "references": "المراجع العلمية",
     "safetyAcknowledgment": "إقرار السلامة",
     "safetyAcknowledgmentText": "لقد قرأت وفهمت جميع تعليمات السلامة وسأتبع إجراءات السلامة المناسبة أثناء الاختبار.",
     "startTest": "بدء الاختبار",

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:icons_plus/icons_plus.dart';
 import '../services/notification_service.dart';
+import '../globals.dart';
 
 class NotificationDemoWidget extends StatelessWidget {
   const NotificationDemoWidget({super.key});
@@ -12,7 +13,6 @@ class NotificationDemoWidget extends StatelessWidget {
       children: [
         ElevatedButton(
           onPressed: () => NotificationService.showSuccess(
-            context: context,
             title: '✅ Success',
             message: 'This is a success notification!',
           ),
@@ -21,7 +21,6 @@ class NotificationDemoWidget extends StatelessWidget {
         const SizedBox(height: 16),
         ElevatedButton(
           onPressed: () => NotificationService.showError(
-            context: context,
             title: '❌ Error',
             message: 'This is an error notification!',
           ),
@@ -30,7 +29,6 @@ class NotificationDemoWidget extends StatelessWidget {
         const SizedBox(height: 16),
         ElevatedButton(
           onPressed: () => NotificationService.showInfo(
-            context: context,
             title: '💡 Info',
             message: 'This is an info notification!',
           ),
@@ -144,12 +142,10 @@ class _TopNotificationWidgetState extends State<TopNotificationWidget>
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
                   color: isError
-                      ? const Color(0xFFFCA5A5).withValues(
-                          alpha: 0.3,
-                        ) // Light red border
+                      ? const Color(0xFFFCA5A5).withOpacity(0.3) // Light red border
                       : const Color(
                           0xFF86EFAC,
-                        ).withValues(alpha: 0.3), // Light green border
+                        ).withOpacity(0.3), // Light green border
                   width: 1,
                 ),
                 boxShadow: [
@@ -158,7 +154,7 @@ class _TopNotificationWidgetState extends State<TopNotificationWidget>
                         (isError
                                 ? const Color(0xFFEF4444)
                                 : const Color(0xFF10B981))
-                            .withValues(alpha: 0.1),
+                            .withOpacity(0.1),
                     blurRadius: 20,
                     offset: const Offset(0, 8),
                   ),
@@ -173,7 +169,7 @@ class _TopNotificationWidgetState extends State<TopNotificationWidget>
                           (isError
                                   ? const Color(0xFFEF4444)
                                   : const Color(0xFF10B981))
-                              .withValues(alpha: 0.1),
+                              .withOpacity(0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Icon(
@@ -210,7 +206,7 @@ class _TopNotificationWidgetState extends State<TopNotificationWidget>
                             (isError
                                     ? const Color(0xFFEF4444)
                                     : const Color(0xFF10B981))
-                                .withValues(alpha: 0.1),
+                                .withOpacity(0.1),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Icon(
@@ -236,7 +232,6 @@ class TopNotificationOverlay {
   static OverlayEntry? _currentOverlay;
 
   static void show({
-    required BuildContext context,
     required String message,
     bool isError = true,
     Duration duration = const Duration(seconds: 4),
@@ -253,7 +248,12 @@ class TopNotificationOverlay {
       ),
     );
 
-    Overlay.of(context).insert(_currentOverlay!);
+    final overlayState = navigatorKey.currentState?.overlay;
+    if (overlayState != null) {
+      overlayState.insert(_currentOverlay!);
+    } else {
+      debugPrint('❌ TopNotificationOverlay: navigatorKey.currentState?.overlay is null');
+    }
   }
 
   static void hide() {

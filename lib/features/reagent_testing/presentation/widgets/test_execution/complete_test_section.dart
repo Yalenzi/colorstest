@@ -45,12 +45,10 @@ class CompleteTestSection extends ConsumerWidget {
           padding: const EdgeInsets.symmetric(vertical: 16),
           backgroundColor: isReady
               ? const Color(0xFF10B981) // Vibrant green for enabled state
-              : Theme.of(context).colorScheme.onSurface.withValues(
-                  alpha: 0.12,
-                ), // Disabled color
+              : Theme.of(context).colorScheme.onSurface.withOpacity(0.12), // Disabled color
           foregroundColor: isReady
               ? Colors.white
-              : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.38),
+              : Theme.of(context).colorScheme.onSurface.withOpacity(0.38),
           elevation: isReady ? 2 : 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),

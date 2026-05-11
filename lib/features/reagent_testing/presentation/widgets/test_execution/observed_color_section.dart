@@ -158,9 +158,7 @@ class _ObservedColorSectionState extends ConsumerState<ObservedColorSection> {
                         borderRadius: BorderRadius.circular(12),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.orange.shade200.withValues(
-                              alpha: 0.5,
-                            ),
+                            color: Colors.orange.shade200.withOpacity(0.5),
                             blurRadius: 8,
                             offset: const Offset(0, 2),
                           ),
@@ -218,7 +216,7 @@ class _ObservedColorSectionState extends ConsumerState<ObservedColorSection> {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.8),
+                      color: Colors.white.withOpacity(0.8),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(color: Colors.grey.shade200),
                     ),
@@ -276,12 +274,8 @@ class _ObservedColorSectionState extends ConsumerState<ObservedColorSection> {
                                   boxShadow: [
                                     BoxShadow(
                                       color: isSelected
-                                          ? Colors.indigo.shade200.withValues(
-                                              alpha: 0.5,
-                                            )
-                                          : Colors.grey.shade200.withValues(
-                                              alpha: 0.3,
-                                            ),
+                                          ? Colors.indigo.shade200.withOpacity(0.5)
+                                          : Colors.grey.shade200.withOpacity(0.3),
                                       blurRadius: isSelected ? 8 : 4,
                                       offset: const Offset(0, 2),
                                     ),
@@ -306,9 +300,7 @@ class _ObservedColorSectionState extends ConsumerState<ObservedColorSection> {
                                           ),
                                           boxShadow: [
                                             BoxShadow(
-                                              color: Colors.black.withValues(
-                                                alpha: 0.1,
-                                              ),
+                                              color: Colors.black.withOpacity(0.1),
                                               blurRadius: 2,
                                               offset: const Offset(0, 1),
                                             ),

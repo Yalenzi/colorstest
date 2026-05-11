@@ -1,265 +1,254 @@
 import 'dart:convert';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import '../models/reagent_model.dart';
-import '../models/safety_instructions_model.dart';
 import '../../../../core/utils/logger.dart';
 
+// ═════════════════════════════════════════════════════════════════════════════
+// RemoteConfigService — Production-Grade
+//
+// Firebase Remote Config key contract:
+//   • reagents_data         — JSON object: { "Marquis Test": { … }, … }
+//   • safety_instructions   — JSON object: { "Marquis Test": { … }, … }
+//   • references_data       — JSON object: { "Marquis Test": { "reference": […] }, … }
+//   • reagent_version       — String: semantic version ("1.2.0")
+//   • gemini_api_key        — String: Gemini AI key (blank = use env var)
+//
+// ALL keys default to empty JSON so that the app never crashes if Remote
+// Config has not been published yet — it falls through to local assets.
+// ═════════════════════════════════════════════════════════════════════════════
+
 class RemoteConfigService {
-  static const String _reagentDataKey = 'reagent_data';
-  static const String _safetyInstructionsKey = 'safety_instructions';
-  static const String _availableReagentsKey = 'available_reagents';
-  static const String _reagentVersionKey = 'reagent_version';
-  static const String _geminiApiKeyKey = 'gemini_api_key';
+  // ── Key constants ──────────────────────────────────────────────────────────
+  static const String _reagentsDataKey      = 'reagents_data';
+  static const String _safetyKey            = 'safety_instructions';
+  static const String _referencesDataKey    = 'references_data';
+  static const String _reagentVersionKey    = 'reagent_version';
+  static const String _geminiApiKeyKey      = 'gemini_api_key';
 
   final FirebaseRemoteConfig _remoteConfig;
 
   RemoteConfigService({FirebaseRemoteConfig? remoteConfig})
-    : _remoteConfig = remoteConfig ?? FirebaseRemoteConfig.instance;
+      : _remoteConfig = remoteConfig ?? FirebaseRemoteConfig.instance;
 
-  /// Initialize Remote Config with default values
+  // ── Initialization ─────────────────────────────────────────────────────────
+
   Future<void> initialize() async {
     try {
-      // Set configuration settings
       await _remoteConfig.setConfigSettings(
         RemoteConfigSettings(
-          fetchTimeout: const Duration(minutes: 1),
-          minimumFetchInterval: const Duration(hours: 1),
+          fetchTimeout:           const Duration(minutes: 1),
+          minimumFetchInterval:   const Duration(hours: 1),
         ),
       );
 
-      // Set default values (fallback to local assets)
+      // Defaults ensure the app boots cleanly with no published config.
       await _remoteConfig.setDefaults({
-        _reagentDataKey: '{}',
-        _safetyInstructionsKey: '{}',
-        _availableReagentsKey: '[]',
+        _reagentsDataKey:   '{}',
+        _safetyKey:         '{}',
+        _referencesDataKey: '{}',
         _reagentVersionKey: '1.0.0',
-        _geminiApiKeyKey: '', // No default for security
+        _geminiApiKeyKey:   '',
       });
 
-      // Fetch and activate
       await fetchAndActivate();
-
-      Logger.info('✅ Remote Config initialized successfully');
-    } catch (e) {
-      Logger.info('❌ Error initializing Remote Config: $e');
+      Logger.info('✅ [RemoteConfig] Initialized successfully');
+    } catch (e, st) {
+      Logger.error('❌ [RemoteConfig] Initialization failed: $e',
+          error: e, stackTrace: st);
       rethrow;
     }
   }
 
-  /// Fetch latest config and activate
+  // ── Fetch ──────────────────────────────────────────────────────────────────
+
   Future<bool> fetchAndActivate() async {
     try {
-      final bool updated = await _remoteConfig.fetchAndActivate();
+      final updated = await _remoteConfig.fetchAndActivate();
       if (updated) {
-        Logger.info('🔄 Remote Config updated with new values');
+        Logger.info('🔄 [RemoteConfig] New values activated');
       }
       return updated;
-    } catch (e) {
-      Logger.info('❌ Error fetching Remote Config: $e');
+    } catch (e, st) {
+      Logger.error('❌ [RemoteConfig] fetchAndActivate failed: $e',
+          error: e, stackTrace: st);
       return false;
     }
   }
 
-  /// Get all reagents from Remote Config
-  Future<List<ReagentModel>> getReagents() async {
+  Future<bool> activate() async {
     try {
-      final String reagentDataJson = _remoteConfig.getString(_reagentDataKey);
-      final String availableReagentsJson = _remoteConfig.getString(
-        _availableReagentsKey,
-      );
+      return await _remoteConfig.activate();
+    } catch (e, st) {
+      Logger.error('❌ [RemoteConfig] activate failed: $e',
+          error: e, stackTrace: st);
+      return false;
+    }
+  }
 
-      if (reagentDataJson.isEmpty || reagentDataJson == '{}') {
-        Logger.info('⚠️ No reagent data in Remote Config, using fallback');
-        return [];
-      }
+  // ── Reagent Data ───────────────────────────────────────────────────────────
 
-      final Map<String, dynamic> reagentData = json.decode(reagentDataJson);
-      final List<String> availableReagents = List<String>.from(
-        json.decode(availableReagentsJson),
-      );
+  /// Returns true only when `reagents_data` has non-empty content.
+  bool hasReagentData() {
+    final raw = _remoteConfig.getString(_reagentsDataKey);
+    return raw.isNotEmpty && raw != '{}';
+  }
 
+  /// Parse and return all reagents from `reagents_data`.
+  ///
+  /// The value must be a JSON object keyed by test name, e.g.:
+  ///   { "Marquis Test": { "reagentName": "Marquis Test", … }, … }
+  ///
+  /// Returns an empty list (not an error) when the key is unpublished,
+  /// letting [UnifiedDataService] fall back to local JSON.
+  Future<List<ReagentModel>> getReagents() async {
+    final raw = _remoteConfig.getString(_reagentsDataKey);
+
+    if (raw.isEmpty || raw == '{}') {
+      Logger.info('⚠️ [RemoteConfig] reagents_data is empty — using local fallback');
+      return [];
+    }
+
+    try {
+      final Map<String, dynamic> decoded = json.decode(raw);
       final List<ReagentModel> reagents = [];
+      final List<String> parseErrors = [];
 
-      for (final reagentName in availableReagents) {
-        if (reagentData.containsKey(reagentName)) {
-          try {
-            final reagentJson =
-                reagentData[reagentName] as Map<String, dynamic>;
-            final reagent = ReagentModel.fromJson(reagentJson);
-            reagents.add(reagent);
-            Logger.info(
-              '✅ Loaded reagent from Remote Config: ${reagent.reagentName}',
-            );
-          } catch (e) {
-            Logger.info('❌ Error parsing reagent $reagentName: $e');
+      decoded.forEach((key, value) {
+        try {
+          if (value is! Map<String, dynamic>) {
+            throw FormatException('Expected object for "$key"');
           }
+          // Inject the key as reagentName when the field is absent
+          final Map<String, dynamic> entry = {
+            'reagentName': key,
+            ...value,
+          };
+          reagents.add(ReagentModel.fromJson(entry));
+          Logger.info('✅ [RemoteConfig] Parsed reagent: $key');
+        } catch (e) {
+          parseErrors.add('  • "$key": $e');
+          Logger.error('❌ [RemoteConfig] Parse error for "$key": $e');
         }
+      });
+
+      if (parseErrors.isNotEmpty) {
+        Logger.warning(
+          '⚠️ [RemoteConfig] ${parseErrors.length} reagents skipped:\n'
+          '${parseErrors.join("\n")}',
+        );
       }
 
-      Logger.info('📊 Loaded ${reagents.length} reagents from Remote Config');
+      Logger.info('📊 [RemoteConfig] Loaded ${reagents.length} reagents');
       return reagents;
-    } catch (e) {
-      Logger.info('❌ Error getting reagents from Remote Config: $e');
+    } catch (e, st) {
+      Logger.error('❌ [RemoteConfig] Failed to decode reagents_data: $e',
+          error: e, stackTrace: st);
       return [];
     }
   }
 
-  /// Get specific reagent by name
-  Future<ReagentModel?> getReagentByName(String reagentName) async {
+  /// Get a single reagent by name.
+  Future<ReagentModel?> getReagentByName(String name) async {
+    final all = await getReagents();
     try {
-      final reagents = await getReagents();
-      return reagents.firstWhere(
-        (reagent) =>
-            reagent.reagentName.toLowerCase() == reagentName.toLowerCase(),
-        orElse: () => throw StateError('Reagent not found'),
+      return all.firstWhere(
+        (r) => r.reagentName.toLowerCase() == name.toLowerCase(),
       );
-    } catch (e) {
-      Logger.info('❌ Reagent $reagentName not found in Remote Config: $e');
+    } catch (_) {
+      Logger.info('⚠️ [RemoteConfig] Reagent "$name" not found');
       return null;
     }
   }
 
-  /// Check if reagent data is available in Remote Config
-  bool hasReagentData() {
-    final String reagentDataJson = _remoteConfig.getString(_reagentDataKey);
-    return reagentDataJson.isNotEmpty && reagentDataJson != '{}';
-  }
+  // ── References Data ────────────────────────────────────────────────────────
 
-  /// Get current reagent version
-  String getReagentVersion() {
-    return _remoteConfig.getString(_reagentVersionKey);
-  }
+  /// Returns scientific references for [reagentName] from Remote Config.
+  ///
+  /// The `references_data` key should hold:
+  ///   { "Marquis Test": { "reference": ["…", "…"] }, … }
+  Future<List<String>> getReferencesForReagent(String reagentName) async {
+    final raw = _remoteConfig.getString(_referencesDataKey);
+    if (raw.isEmpty || raw == '{}') return [];
 
-  /// Get available reagent names
-  List<String> getAvailableReagentNames() {
     try {
-      final String availableReagentsJson = _remoteConfig.getString(
-        _availableReagentsKey,
+      final Map<String, dynamic> decoded = json.decode(raw);
+      final entry = decoded[reagentName];
+      if (entry == null) return [];
+
+      final refs = (entry as Map<String, dynamic>)['reference'];
+      if (refs == null) return [];
+      return List<String>.from(refs as List);
+    } catch (e, st) {
+      Logger.error(
+        '❌ [RemoteConfig] getReferencesForReagent("$reagentName") failed: $e',
+        error: e,
+        stackTrace: st,
       );
-      if (availableReagentsJson.isEmpty || availableReagentsJson == '[]') {
-        return [];
-      }
-      return List<String>.from(json.decode(availableReagentsJson));
-    } catch (e) {
-      Logger.info('❌ Error getting available reagent names: $e');
       return [];
     }
   }
 
-  /// Get all safety instructions from Remote Config
-  Future<Map<String, SafetyInstructionsModel>> getSafetyInstructions() async {
+  // ── Safety Data ────────────────────────────────────────────────────────────
+
+  /// Returns the raw safety JSON map from Remote Config, or `{}` on error.
+  ///
+  /// Used by [UnifiedDataService._loadSafetyData()] to parse safety data
+  /// without coupling it to [SafetyInstructionsModel].
+  Map<String, dynamic> getSafetyJsonMap() {
+    final raw = _remoteConfig.getString(_safetyKey);
+    if (raw.isEmpty || raw == '{}') return {};
+
     try {
-      final String safetyDataJson = _remoteConfig.getString(
-        _safetyInstructionsKey,
-      );
-
-      if (safetyDataJson.isEmpty || safetyDataJson == '{}') {
-        Logger.info(
-          '⚠️ No safety instructions in Remote Config, using fallback',
-        );
-        return {};
-      }
-
-      final Map<String, dynamic> safetyData = json.decode(safetyDataJson);
-      final Map<String, SafetyInstructionsModel> safetyInstructions = {};
-
-      for (final entry in safetyData.entries) {
-        final reagentName = entry.key;
-        final safetyJson = entry.value as Map<String, dynamic>;
-
-        try {
-          final safety = SafetyInstructionsModel.fromJson(
-            reagentName,
-            safetyJson,
-          );
-          safetyInstructions[reagentName] = safety;
-          Logger.info('✅ Loaded safety instructions for: $reagentName');
-        } catch (e) {
-          Logger.info(
-            '❌ Error parsing safety instructions for $reagentName: $e',
-          );
-        }
-      }
-
-      Logger.info(
-        '📋 Loaded safety instructions for ${safetyInstructions.length} reagents',
-      );
-      return safetyInstructions;
-    } catch (e) {
-      Logger.info('❌ Error getting safety instructions from Remote Config: $e');
+      return json.decode(raw) as Map<String, dynamic>;
+    } catch (e, st) {
+      Logger.error('❌ [RemoteConfig] getSafetyJsonMap failed: $e',
+          error: e, stackTrace: st);
       return {};
     }
   }
 
-  /// Get safety instructions for a specific reagent
-  Future<SafetyInstructionsModel?> getSafetyInstructionsByReagent(
-    String reagentName,
-  ) async {
-    try {
-      final allSafetyInstructions = await getSafetyInstructions();
-      return allSafetyInstructions[reagentName];
-    } catch (e) {
-      Logger.info('❌ Safety instructions for $reagentName not found: $e');
-      return null;
-    }
-  }
-
-  /// Check if safety instructions data is available in Remote Config
   bool hasSafetyInstructions() {
-    final String safetyDataJson = _remoteConfig.getString(
-      _safetyInstructionsKey,
-    );
-    return safetyDataJson.isNotEmpty && safetyDataJson != '{}';
+    final raw = _remoteConfig.getString(_safetyKey);
+    return raw.isNotEmpty && raw != '{}';
   }
 
-  /// Listen for real-time config updates
-  Stream<RemoteConfigUpdate> onConfigUpdated() {
-    return _remoteConfig.onConfigUpdated;
-  }
+  // ── Version ────────────────────────────────────────────────────────────────
 
-  /// Activate fetched config
-  Future<bool> activate() async {
-    try {
-      return await _remoteConfig.activate();
-    } catch (e) {
-      Logger.info('❌ Error activating Remote Config: $e');
-      return false;
-    }
-  }
+  String getReagentVersion() => _remoteConfig.getString(_reagentVersionKey);
 
-  /// Get Gemini API key from Remote Config
+  // ── Gemini API Key ─────────────────────────────────────────────────────────
+
   String getGeminiApiKey() {
-    final apiKey = _remoteConfig.getString(_geminiApiKeyKey);
-    if (apiKey.isNotEmpty) {
-      Logger.info('🔑 Gemini API key loaded from Remote Config');
+    final key = _remoteConfig.getString(_geminiApiKeyKey);
+    if (key.isNotEmpty) {
+      Logger.info('🔑 [RemoteConfig] Gemini API key loaded');
     } else {
-      Logger.info('⚠️ No Gemini API key found in Remote Config');
+      Logger.info('⚠️ [RemoteConfig] No Gemini API key in Remote Config');
     }
-    return apiKey;
+    return key;
   }
 
-  /// Check if Gemini API key is available in Remote Config
-  bool hasGeminiApiKey() {
-    final apiKey = _remoteConfig.getString(_geminiApiKeyKey);
-    return apiKey.isNotEmpty;
-  }
+  bool hasGeminiApiKey() =>
+      _remoteConfig.getString(_geminiApiKeyKey).isNotEmpty;
 
-  /// Get Gemini API key with fallback to environment variable
+  /// Returns the Gemini key from Remote Config, falling back to the
+  /// compile-time GEMINI_API_KEY environment variable.
   String getGeminiApiKeyWithFallback() {
-    // First try Remote Config
-    final remoteApiKey = getGeminiApiKey();
-    if (remoteApiKey.isNotEmpty) {
-      return remoteApiKey;
+    final remote = getGeminiApiKey();
+    if (remote.isNotEmpty) return remote;
+
+    const env = String.fromEnvironment('GEMINI_API_KEY');
+    if (env.isNotEmpty) {
+      Logger.info('🔑 [RemoteConfig] Using Gemini key from env variable');
+      return env;
     }
 
-    // Fallback to environment variable
-    const envApiKey = String.fromEnvironment('GEMINI_API_KEY');
-    if (envApiKey.isNotEmpty) {
-      Logger.info('🔑 Using Gemini API key from environment variable');
-      return envApiKey;
-    }
-
-    Logger.error('❌ No Gemini API key found in Remote Config or environment');
+    Logger.error('❌ [RemoteConfig] No Gemini API key found');
     return '';
   }
+
+  // ── Real-time updates ──────────────────────────────────────────────────────
+
+  Stream<RemoteConfigUpdate> onConfigUpdated() =>
+      _remoteConfig.onConfigUpdated;
 }

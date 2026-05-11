@@ -29,8 +29,8 @@ class SettingsSection extends StatelessWidget {
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        theme.colorScheme.primary.withValues(alpha: 0.2),
-                        theme.colorScheme.primary.withValues(alpha: 0.1),
+                        theme.colorScheme.primary.withOpacity(0.2),
+                        theme.colorScheme.primary.withOpacity(0.1),
                       ],
                     ),
                     borderRadius: BorderRadius.circular(8),
@@ -59,7 +59,7 @@ class SettingsSection extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
-                color: theme.colorScheme.shadow.withValues(alpha: 0.1),
+                color: theme.colorScheme.shadow.withOpacity(0.1),
                 blurRadius: 20,
                 offset: const Offset(0, 4),
               ),

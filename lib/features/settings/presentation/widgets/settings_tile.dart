@@ -72,7 +72,7 @@ class _SettingsTileState extends State<SettingsTile>
               ),
               decoration: BoxDecoration(
                 color: _isPressed
-                    ? theme.colorScheme.primaryContainer.withValues(alpha: 0.1)
+                    ? theme.colorScheme.primaryContainer.withOpacity(0.1)
                     : theme.colorScheme.surface,
                 borderRadius: BorderRadius.vertical(
                   top: widget.isFirst ? const Radius.circular(16) : Radius.zero,
@@ -83,7 +83,7 @@ class _SettingsTileState extends State<SettingsTile>
                 border: !widget.isLast
                     ? Border(
                         bottom: BorderSide(
-                          color: theme.dividerColor.withValues(alpha: 0.2),
+                          color: theme.dividerColor.withOpacity(0.2),
                           width: 0.5,
                         ),
                       )
@@ -91,9 +91,7 @@ class _SettingsTileState extends State<SettingsTile>
                 boxShadow: _isPressed
                     ? [
                         BoxShadow(
-                          color: theme.colorScheme.primary.withValues(
-                            alpha: 0.1,
-                          ),
+                          color: theme.colorScheme.primary.withOpacity(0.1),
                           blurRadius: 8,
                           offset: const Offset(0, 2),
                         ),
@@ -113,8 +111,8 @@ class _SettingsTileState extends State<SettingsTile>
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
-                              theme.colorScheme.primary.withValues(alpha: 0.1),
-                              theme.colorScheme.primary.withValues(alpha: 0.05),
+                              theme.colorScheme.primary.withOpacity(0.1),
+                              theme.colorScheme.primary.withOpacity(0.05),
                             ],
                           ),
                           borderRadius: BorderRadius.circular(10),
@@ -268,7 +266,7 @@ class SettingsDropdownTile<T> extends StatelessWidget {
           ),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: theme.colorScheme.outline.withValues(alpha: 0.3),
+            color: theme.colorScheme.outline.withOpacity(0.3),
           ),
         ),
         child: DropdownButton<T>(

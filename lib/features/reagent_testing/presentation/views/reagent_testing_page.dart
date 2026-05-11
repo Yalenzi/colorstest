@@ -66,7 +66,7 @@ class _ReagentTestingPageState extends ConsumerState<ReagentTestingPage> {
         color: Theme.of(context).colorScheme.surface,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: Colors.black.withOpacity(0.05),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -98,7 +98,7 @@ class _ReagentTestingPageState extends ConsumerState<ReagentTestingPage> {
         filled: true,
         fillColor: Theme.of(
           context,
-        ).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+        ).colorScheme.surfaceContainerHighest.withOpacity(0.3),
       ),
       onChanged: (value) {
         setState(() {});

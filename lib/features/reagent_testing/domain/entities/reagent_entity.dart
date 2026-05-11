@@ -11,6 +11,7 @@ class ReagentEntity {
   final List<String> chemicals;
   final List<DrugResultEntity> drugResults;
   final String category;
+  final List<String> references;
 
   const ReagentEntity({
     required this.reagentName,
@@ -23,6 +24,7 @@ class ReagentEntity {
     required this.chemicals,
     required this.drugResults,
     required this.category,
+    this.references = const [],
   });
 
   @override
@@ -38,7 +40,8 @@ class ReagentEntity {
         other.testDuration == testDuration &&
         _listEquals(other.chemicals, chemicals) &&
         _listEquals(other.drugResults, drugResults) &&
-        other.category == category;
+        other.category == category &&
+        _listEquals(other.references, references);
   }
 
   @override
@@ -52,7 +55,8 @@ class ReagentEntity {
         testDuration.hashCode ^
         chemicals.hashCode ^
         drugResults.hashCode ^
-        category.hashCode;
+        category.hashCode ^
+        references.hashCode;
   }
 
   bool _listEquals<T>(List<T> a, List<T> b) {
@@ -65,6 +69,9 @@ class ReagentEntity {
 
   @override
   String toString() {
-    return 'ReagentEntity(reagentName: $reagentName, description: $description, safetyLevel: $safetyLevel, testDuration: $testDuration, chemicals: $chemicals, drugResults: ${drugResults.length} results, category: $category)';
+    return 'ReagentEntity(reagentName: $reagentName, description: $description, '
+        'safetyLevel: $safetyLevel, testDuration: $testDuration, '
+        'chemicals: $chemicals, drugResults: ${drugResults.length} results, '
+        'category: $category, references: ${references.length})';
   }
 }

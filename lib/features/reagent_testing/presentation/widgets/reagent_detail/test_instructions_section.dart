@@ -34,13 +34,13 @@ class TestInstructionsSection extends ConsumerWidget {
             gradient: LinearGradient(
               colors: [
                 theme.colorScheme.tertiary,
-                theme.colorScheme.tertiary.withValues(alpha: 0.8),
+                theme.colorScheme.tertiary.withOpacity(0.8),
               ],
             ),
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color: theme.colorScheme.tertiary.withValues(alpha: 0.3),
+                color: theme.colorScheme.tertiary.withOpacity(0.3),
                 blurRadius: 8,
                 offset: const Offset(0, 4),
               ),

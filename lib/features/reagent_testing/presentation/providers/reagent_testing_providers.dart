@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/repositories/reagent_testing_repository_impl.dart';
 import '../../data/repositories/test_result_history_repository.dart';
-import '../../data/services/json_data_service.dart';
+import '../../data/services/unified_data_service.dart';
 import '../../data/services/remote_config_service.dart';
 import '../../data/services/safety_instructions_service.dart';
 import '../../../../core/utils/logger.dart';
@@ -16,7 +16,6 @@ import '../states/test_result_state.dart';
 import '../states/test_result_history_state.dart';
 import 'package:reagentkit/core/services/gemini_image_analysis_service.dart';
 
-//
 import 'package:reagentkit/core/config/get_it_config.dart';
 
 // Remote Config Service Provider
@@ -24,10 +23,10 @@ final remoteConfigServiceProvider = Provider<RemoteConfigService>((ref) {
   return RemoteConfigService();
 });
 
-// JSON Data Service Provider (now with Remote Config)
-final jsonDataServiceProvider = Provider<JsonDataService>((ref) {
+// Unified Data Service Provider
+final unifiedDataServiceProvider = Provider<UnifiedDataService>((ref) {
   final remoteConfigService = ref.watch(remoteConfigServiceProvider);
-  return JsonDataService(remoteConfigService: remoteConfigService);
+  return UnifiedDataService(remoteConfig: remoteConfigService);
 });
 
 // Safety Instructions Service Provider
@@ -42,20 +41,20 @@ final safetyInstructionsServiceProvider = Provider<SafetyInstructionsService>((
 final reagentTestingRepositoryProvider = Provider<ReagentTestingRepository>((
   ref,
 ) {
-  final jsonDataService = ref.watch(jsonDataServiceProvider);
-  return ReagentTestingRepositoryImpl(jsonDataService);
+  final dataService = ref.watch(unifiedDataServiceProvider);
+  return ReagentTestingRepositoryImpl(dataService);
 });
 
 // Controller Provider with initialization
 final reagentTestingControllerProvider =
     StateNotifierProvider<ReagentTestingController, ReagentTestingState>((ref) {
       final repository = ref.watch(reagentTestingRepositoryProvider);
-      final jsonDataService = ref.watch(jsonDataServiceProvider);
+      final dataService = ref.watch(unifiedDataServiceProvider);
 
       final controller = ReagentTestingController(repository);
 
       // Initialize Remote Config when controller is created
-      _initializeRemoteConfig(ref, jsonDataService, controller);
+      _initializeRemoteConfig(ref, dataService, controller);
 
       return controller;
     });
@@ -63,7 +62,7 @@ final reagentTestingControllerProvider =
 // Helper function to initialize Remote Config
 Future<void> _initializeRemoteConfig(
   Ref ref,
-  JsonDataService jsonDataService,
+  UnifiedDataService dataService,
   ReagentTestingController controller,
 ) async {
   try {
@@ -73,7 +72,7 @@ Future<void> _initializeRemoteConfig(
 
     // Initialize Remote Config services
     await Future.wait([
-      jsonDataService.initialize(),
+      dataService.initialize(),
       safetyInstructionsService.initialize(),
     ]);
 
@@ -81,14 +80,15 @@ Future<void> _initializeRemoteConfig(
     controller.loadAllReagents();
 
     // Listen for real-time updates
-    jsonDataService.onDataUpdated().listen((_) {
-      Logger.info('🔄 Reagent data updated from Remote Config, reloading...');
-      controller.loadAllReagents();
+    dataService.onSnapshot.listen((snapshot) {
+      if (snapshot.source == DataSource.firebase) {
+        Logger.info('🔄 Reagent data updated from Remote Config, reloading...');
+        controller.loadAllReagents();
+      }
     });
 
     safetyInstructionsService.onDataUpdated().listen((_) {
       Logger.info('🔄 Safety instructions updated from Remote Config');
-      // Safety instructions are loaded on-demand, so no immediate reload needed
     });
 
     Logger.info('✅ Remote Config initialization complete');
@@ -131,14 +131,19 @@ final testResultHistoryControllerProvider =
 
 // Data source info provider (for debugging/info display)
 final dataSourceInfoProvider = Provider<String>((ref) {
-  final jsonDataService = ref.watch(jsonDataServiceProvider);
-  return jsonDataService.getDataVersion();
+  final dataService = ref.watch(unifiedDataServiceProvider);
+  return dataService.cacheVersion;
 });
 
 // Remote Config refresh provider
 final remoteConfigRefreshProvider = FutureProvider<bool>((ref) async {
-  final jsonDataService = ref.watch(jsonDataServiceProvider);
-  return await jsonDataService.refreshFromRemoteConfig();
+  final dataService = ref.watch(unifiedDataServiceProvider);
+  try {
+    await dataService.refresh();
+    return true;
+  } catch (e) {
+    return false;
+  }
 });
 
 // Gemini Analysis Service Provider (async)

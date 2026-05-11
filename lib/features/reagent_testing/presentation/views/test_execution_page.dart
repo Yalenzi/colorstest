@@ -76,7 +76,7 @@ class _TestExecutionPageState extends ConsumerState<TestExecutionPage> {
             borderRadius: BorderRadius.circular(28),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.1),
+                color: Colors.black.withOpacity(0.1),
                 blurRadius: 20,
                 offset: const Offset(0, 8),
               ),
@@ -94,8 +94,8 @@ class _TestExecutionPageState extends ConsumerState<TestExecutionPage> {
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [
-                      Colors.orange.withValues(alpha: 0.2),
-                      Colors.red.withValues(alpha: 0.2),
+                      Colors.orange.withOpacity(0.2),
+                      Colors.red.withOpacity(0.2),
                     ],
                   ),
                   borderRadius: BorderRadius.circular(40),
@@ -139,7 +139,7 @@ class _TestExecutionPageState extends ConsumerState<TestExecutionPage> {
                       height: 52,
                       decoration: BoxDecoration(
                         border: Border.all(
-                          color: theme.colorScheme.outline.withValues(alpha: 0.3),
+                          color: theme.colorScheme.outline.withOpacity(0.3),
                         ),
                         borderRadius: BorderRadius.circular(16),
                       ),
@@ -174,7 +174,7 @@ class _TestExecutionPageState extends ConsumerState<TestExecutionPage> {
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.red.withValues(alpha: 0.3),
+                            color: Colors.red.withOpacity(0.3),
                             blurRadius: 8,
                             offset: const Offset(0, 4),
                           ),

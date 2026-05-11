@@ -32,13 +32,13 @@ class ChemicalComponentsSection extends StatelessWidget {
             gradient: LinearGradient(
               colors: [
                 theme.colorScheme.secondary,
-                theme.colorScheme.secondary.withValues(alpha: 0.8),
+                theme.colorScheme.secondary.withOpacity(0.8),
               ],
             ),
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color: theme.colorScheme.secondary.withValues(alpha: 0.3),
+                color: theme.colorScheme.secondary.withOpacity(0.3),
                 blurRadius: 8,
                 offset: const Offset(0, 4),
               ),

@@ -1,17 +1,17 @@
 import '../../domain/entities/reagent_entity.dart';
 import '../../domain/repositories/reagent_testing_repository.dart';
-import '../services/json_data_service.dart';
+import '../services/unified_data_service.dart';
 
 class ReagentTestingRepositoryImpl implements ReagentTestingRepository {
-  final JsonDataService _jsonDataService;
+  final UnifiedDataService _dataService;
 
-  ReagentTestingRepositoryImpl(this._jsonDataService);
+  ReagentTestingRepositoryImpl(this._dataService);
 
   @override
   Future<List<ReagentEntity>> getAllReagents() async {
     try {
-      final reagentModels = await _jsonDataService.loadAllReagents();
-      return reagentModels.map((model) => model.toEntity()).toList();
+      final snapshot = await _dataService.getAllData();
+      return snapshot.reagents.map((model) => model.toEntity()).toList();
     } catch (e) {
       throw Exception('Failed to load reagents: $e');
     }
@@ -20,9 +20,7 @@ class ReagentTestingRepositoryImpl implements ReagentTestingRepository {
   @override
   Future<ReagentEntity?> getReagentByName(String reagentName) async {
     try {
-      final reagentModel = await _jsonDataService.loadReagentByName(
-        reagentName,
-      );
+      final reagentModel = await _dataService.getReagentByName(reagentName);
       return reagentModel?.toEntity();
     } catch (e) {
       throw Exception('Failed to load reagent $reagentName: $e');
@@ -32,7 +30,7 @@ class ReagentTestingRepositoryImpl implements ReagentTestingRepository {
   @override
   Future<List<ReagentEntity>> searchReagents(String query) async {
     try {
-      final reagentModels = await _jsonDataService.searchReagents(query);
+      final reagentModels = await _dataService.searchReagents(query);
       return reagentModels.map((model) => model.toEntity()).toList();
     } catch (e) {
       throw Exception('Failed to search reagents: $e');
@@ -44,10 +42,11 @@ class ReagentTestingRepositoryImpl implements ReagentTestingRepository {
     String safetyLevel,
   ) async {
     try {
-      final reagentModels = await _jsonDataService.getReagentsBySafetyLevel(
-        safetyLevel,
-      );
-      return reagentModels.map((model) => model.toEntity()).toList();
+      final snapshot = await _dataService.getAllData();
+      return snapshot.reagents
+          .where((model) => model.safetyLevel == safetyLevel)
+          .map((model) => model.toEntity())
+          .toList();
     } catch (e) {
       throw Exception('Failed to get reagents by safety level: $e');
     }

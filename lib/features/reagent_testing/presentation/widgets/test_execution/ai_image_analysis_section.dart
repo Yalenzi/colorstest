@@ -59,21 +59,21 @@ class _AIImageAnalysisSectionState
         borderRadius: BorderRadius.circular(24),
         border: isDarkMode
             ? Border.all(
-                color: theme.colorScheme.outline.withValues(alpha: 0.3),
+                color: theme.colorScheme.outline.withOpacity(0.3),
                 width: 1,
               )
             : null,
         boxShadow: [
           BoxShadow(
             color: isDarkMode
-                ? theme.colorScheme.shadow.withValues(alpha: 0.1)
-                : Colors.purple.withValues(alpha: 0.1),
+                ? theme.colorScheme.shadow.withOpacity(0.1)
+                : Colors.purple.withOpacity(0.1),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
           if (!isDarkMode)
             BoxShadow(
-              color: Colors.white.withValues(alpha: 0.8),
+              color: Colors.white.withOpacity(0.8),
               blurRadius: 8,
               offset: const Offset(-4, -4),
             ),
@@ -102,8 +102,8 @@ class _AIImageAnalysisSectionState
                     boxShadow: [
                       BoxShadow(
                         color: isDarkMode
-                            ? theme.colorScheme.primary.withValues(alpha: 0.2)
-                            : Colors.purple.withValues(alpha: 0.3),
+                            ? theme.colorScheme.primary.withOpacity(0.2)
+                            : Colors.purple.withOpacity(0.3),
                         blurRadius: 6,
                         offset: const Offset(0, 3),
                       ),
@@ -280,7 +280,7 @@ class _AIImageAnalysisSectionState
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
                       color: isDarkMode
-                          ? theme.colorScheme.error.withValues(alpha: 0.5)
+                          ? theme.colorScheme.error.withOpacity(0.5)
                           : Colors.red.shade200,
                     ),
                   ),
@@ -327,8 +327,8 @@ class _AIImageAnalysisSectionState
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: isDarkMode
-              ? theme.colorScheme.outline.withValues(alpha: 0.2)
-              : theme.colorScheme.outline.withValues(alpha: 0.1),
+              ? theme.colorScheme.outline.withOpacity(0.2)
+              : theme.colorScheme.outline.withOpacity(0.1),
         ),
       ),
       child: Column(

@@ -9,16 +9,7 @@ import Firebase
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
-    // Configure Firebase
-    FirebaseApp.configure()
-    
-    // Configure Google Sign-In
-    if let path = Bundle.main.path(forResource: "GoogleService-Info", ofType: "plist"),
-       let plist = NSDictionary(contentsOfFile: path),
-       let clientId = plist["CLIENT_ID"] as? String {
-      let gidConfig = GIDConfiguration(clientID: clientId)
-      GIDSignIn.sharedInstance.configuration = gidConfig
-    }
+    // Firebase and Google Sign-In are handled by Flutter plugins automatically
     
     GeneratedPluginRegistrant.register(with: self)
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)

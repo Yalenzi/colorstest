@@ -72,6 +72,7 @@
     "safetyInformation": "Safety Information",
     "chemicalComponents": "Chemical Components",
     "testInstructions": "Test Instructions",
+    "references": "Scientific References",
     "safetyAcknowledgment": "Safety Acknowledgment",
     "safetyAcknowledgmentText": "I have read and understand all safety instructions and will follow proper safety procedures during testing.",
     "startTest": "Start Test",

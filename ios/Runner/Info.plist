@@ -52,11 +52,23 @@
 			<string>REVERSED_CLIENT_ID</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.googleusercontent.apps.76342007759-lfrim4jh8fkntca1o7mlsvldaaqbomaa</string>
+				<string>com.googleusercontent.apps.76342007759-mon4usabeh4a93i12i48eq6maj5qcdm5</string>
 			</array>
 		</dict>
 	</array>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+	<key>NSCameraUsageDescription</key>
+	<string>ReagentKit needs camera access to analyze reagent test results using AI.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>ReagentKit needs photo library access to allow you to upload images of test results for analysis.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>ReagentKit needs microphone access for video capture if needed during testing.</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>https</string>
+		<string>http</string>
+		<string>mailto</string>
+	</array>
 </dict>
 </plist>

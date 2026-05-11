@@ -1,6 +1,10 @@
+import 'dart:convert';
+import 'package:flutter/services.dart' show rootBundle;
 import '../models/safety_instructions_model.dart';
 import 'remote_config_service.dart';
 import '../../../../core/utils/logger.dart';
+
+const _kSafetyAsset = 'assets/data/safety.json';
 
 class SafetyInstructionsService {
   final RemoteConfigService _remoteConfigService;
@@ -96,32 +100,49 @@ class SafetyInstructionsService {
     );
   }
 
-  /// Load all safety instructions (Remote Config first, then fallback)
+  /// Load all safety instructions (Remote Config first, then local fallback)
   Future<Map<String, SafetyInstructionsModel>>
   loadAllSafetyInstructions() async {
     try {
-      // Try Remote Config first
+      // Try Remote Config first via getSafetyJsonMap()
       if (_remoteConfigService.hasSafetyInstructions()) {
         Logger.info('📡 Loading safety instructions from Remote Config...');
-        final remoteSafetyInstructions = await _remoteConfigService
-            .getSafetyInstructions();
-        if (remoteSafetyInstructions.isNotEmpty) {
-          _cachedSafetyInstructions = remoteSafetyInstructions;
-          Logger.info(
-            '✅ Loaded ${remoteSafetyInstructions.length} safety instructions from Remote Config',
-          );
-          return remoteSafetyInstructions;
+        final rawMap = _remoteConfigService.getSafetyJsonMap();
+        if (rawMap.isNotEmpty) {
+          final remoteSafetyInstructions = _parseSafetyJsonMap(rawMap);
+          if (remoteSafetyInstructions.isNotEmpty) {
+            _cachedSafetyInstructions = remoteSafetyInstructions;
+            Logger.info(
+              '✅ Loaded ${remoteSafetyInstructions.length} safety instructions from Remote Config',
+            );
+            return remoteSafetyInstructions;
+          }
         }
       }
 
-      // Fallback to local assets if Remote Config not available
-      Logger.info('📁 Falling back to default safety instructions...');
+      // Fallback to local assets/data/safety.json
+      Logger.info('📁 Falling back to local safety.json...');
       return await _loadSafetyInstructionsFromAssets();
     } catch (e) {
       Logger.info('❌ Error in loadAllSafetyInstructions: $e');
-      // Final fallback to default safety instructions
       return await _loadSafetyInstructionsFromAssets();
     }
+  }
+
+  /// Parse a raw safety JSON map (from Remote Config) into model objects.
+  Map<String, SafetyInstructionsModel> _parseSafetyJsonMap(
+    Map<String, dynamic> rawMap,
+  ) {
+    final result = <String, SafetyInstructionsModel>{};
+    rawMap.forEach((key, value) {
+      try {
+        result[key] = SafetyInstructionsModel.fromJson(
+            key, value as Map<String, dynamic>);
+      } catch (e) {
+        Logger.error('❌ [Safety] Remote parse error for "$key": $e');
+      }
+    });
+    return result;
   }
 
   /// Load safety instructions for a specific reagent
@@ -131,9 +152,11 @@ class SafetyInstructionsService {
     try {
       // Try Remote Config first
       if (_remoteConfigService.hasSafetyInstructions()) {
-        final remoteSafety = await _remoteConfigService
-            .getSafetyInstructionsByReagent(reagentName);
-        if (remoteSafety != null) {
+        final rawMap = _remoteConfigService.getSafetyJsonMap();
+        final entry = rawMap[reagentName];
+        if (entry != null) {
+          final remoteSafety = SafetyInstructionsModel.fromJson(
+              reagentName, entry as Map<String, dynamic>);
           Logger.info(
             '✅ Loaded safety instructions for $reagentName from Remote Config',
           );
@@ -144,26 +167,21 @@ class SafetyInstructionsService {
       // Fallback to cached data or local assets
       if (_cachedSafetyInstructions != null) {
         final cachedSafety = _cachedSafetyInstructions![reagentName];
-        if (cachedSafety != null) {
-          return cachedSafety;
-        }
+        if (cachedSafety != null) return cachedSafety;
       }
 
       // Load all and return specific one
       final allSafetyInstructions = await loadAllSafetyInstructions();
       final safetyFromAll = allSafetyInstructions[reagentName];
-      if (safetyFromAll != null) {
-        return safetyFromAll;
-      }
+      if (safetyFromAll != null) return safetyFromAll;
 
-      // Final fallback: create default safety instructions for this reagent
+      // Final fallback: generic defaults
       Logger.info(
-        '⚠️ No safety instructions found for $reagentName, using default values',
+        '⚠️ No safety instructions found for $reagentName, using defaults',
       );
       return _createDefaultSafetyInstructions(reagentName);
     } catch (e) {
       Logger.info('❌ Error loading safety instructions for $reagentName: $e');
-      // Return default safety instructions on error
       return _createDefaultSafetyInstructions(reagentName);
     }
   }
@@ -243,17 +261,40 @@ class SafetyInstructionsService {
     return safety.getInstructions(isArabic);
   }
 
-  /// Load safety instructions from local assets (fallback)
+  /// Load safety instructions from [assets/data/safety.json] (local fallback).
   Future<Map<String, SafetyInstructionsModel>>
   _loadSafetyInstructionsFromAssets() async {
     try {
-      // Return empty map - individual reagents will get default values when requested
-      Logger.info(
-        '⚠️ No local safety instructions available, individual reagents will use default values',
-      );
-      return {};
-    } catch (e) {
-      Logger.info('❌ Error loading safety instructions from assets: $e');
+      final raw = await rootBundle.loadString(_kSafetyAsset);
+      final Map<String, dynamic> decoded = json.decode(raw);
+      final result = <String, SafetyInstructionsModel>{};
+
+      decoded.forEach((key, value) {
+        try {
+          final m = value as Map<String, dynamic>;
+          result[key] = SafetyInstructionsModel(
+            reagentName:          key,
+            equipment:            List<String>.from(m['requiredEquipment'] as List? ?? []),
+            equipmentAr:          const [],
+            handlingProcedures:   List<String>.from(m['handlingProcedures'] as List? ?? []),
+            handlingProceduresAr: const [],
+            specificHazards:      List<String>.from(m['specificHazards'] as List? ?? []),
+            specificHazardsAr:    const [],
+            storage:              List<String>.from(m['storageRequirements'] as List? ?? []),
+            storageAr:            const [],
+            instructions:         const [],
+            instructionsAr:       const [],
+          );
+        } catch (e) {
+          Logger.error('❌ [Safety] Parse error for "$key": $e');
+        }
+      });
+
+      Logger.info('✅ [Safety] Loaded ${result.length} entries from $_kSafetyAsset');
+      return result;
+    } catch (e, st) {
+      Logger.error('❌ [Safety] Could not load $_kSafetyAsset: $e',
+          error: e, stackTrace: st);
       return {};
     }
   }

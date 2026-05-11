@@ -12,7 +12,6 @@ import '../../../../core/utils/logger.dart';
 
 class AuthController extends StateNotifier<AuthState> {
   final AuthService _authService;
-  BuildContext? _context;
 
   AuthController(this._authService) : super(const AuthInitial()) {
     _initializeAuthState();
@@ -27,10 +26,6 @@ class AuthController extends StateNotifier<AuthState> {
     return errorMessage;
   }
 
-  // Set context for notifications
-  void setContext(BuildContext context) {
-    _context = context;
-  }
 
   // Initialize auth state by listening to auth changes
   void _initializeAuthState() {
@@ -132,12 +127,9 @@ class AuthController extends StateNotifier<AuthState> {
         );
         if (userProfile != null) {
           // Show login success notification
-          if (_context != null) {
-            NotificationService.showLoginSuccess(
-              context: _context!,
-              username: userProfile.username,
-            );
-          }
+          NotificationService.showLoginSuccess(
+            username: userProfile.username,
+          );
 
           state = AuthAuthenticated(userProfile.toEntity());
         } else {
@@ -188,12 +180,9 @@ class AuthController extends StateNotifier<AuthState> {
           Logger.info('✅ AuthController: User profile loaded successfully');
 
           // Show success notification
-          if (_context != null) {
-            NotificationService.showRegistrationSuccess(
-              context: _context!,
-              username: userProfile.username,
-            );
-          }
+          NotificationService.showRegistrationSuccess(
+            username: userProfile.username,
+          );
 
           state = AuthAuthenticated(userProfile.toEntity());
         } else {
@@ -210,13 +199,10 @@ class AuthController extends StateNotifier<AuthState> {
       Logger.info('❌ AuthController: Stack trace: $stackTrace');
 
       // Show error notification
-      if (_context != null) {
-        NotificationService.showError(
-          context: _context!,
-          title: '❌ Registration Failed',
-          message: 'Unable to create account. Please try again.',
-        );
-      }
+      NotificationService.showError(
+        title: '❌ Registration Failed',
+        message: 'Unable to create account. Please try again.',
+      );
 
       // Extract clean error message without Exception prefix
       String errorMessage = _extractErrorMessage(e);
@@ -265,14 +251,11 @@ class AuthController extends StateNotifier<AuthState> {
 
         if (userProfile != null) {
           // Show Google sign-in success notification
-          if (_context != null) {
-            NotificationService.showSuccess(
-              context: _context!,
-              title: '🚀 Google Sign-In Success',
-              message:
-                  'Welcome ${userProfile.username}! Ready to continue testing?',
-            );
-          }
+          NotificationService.showSuccess(
+            title: '🚀 Google Sign-In Success',
+            message:
+                'Welcome ${userProfile.username}! Ready to continue testing?',
+          );
 
           state = AuthAuthenticated(userProfile.toEntity());
         } else {

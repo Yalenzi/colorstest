@@ -91,12 +91,12 @@ class _ReactionTimerSectionState extends ConsumerState<ReactionTimerSection>
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.indigo.withValues(alpha: 0.1),
+            color: Colors.indigo.withOpacity(0.1),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
           BoxShadow(
-            color: Colors.white.withValues(alpha: 0.8),
+            color: Colors.white.withOpacity(0.8),
             blurRadius: 8,
             offset: const Offset(-4, -4),
           ),
@@ -118,7 +118,7 @@ class _ReactionTimerSectionState extends ConsumerState<ReactionTimerSection>
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.indigo.withValues(alpha: 0.3),
+                        color: Colors.indigo.withOpacity(0.3),
                         blurRadius: 6,
                         offset: const Offset(0, 3),
                       ),
@@ -152,18 +152,18 @@ class _ReactionTimerSectionState extends ConsumerState<ReactionTimerSection>
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                       colors: [
-                        Colors.white.withValues(alpha: 0.9),
+                        Colors.white.withOpacity(0.9),
                         Colors.grey.shade100,
                       ],
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.grey.withValues(alpha: 0.2),
+                        color: Colors.grey.withOpacity(0.2),
                         blurRadius: 15,
                         offset: const Offset(0, 8),
                       ),
                       BoxShadow(
-                        color: Colors.white.withValues(alpha: 0.8),
+                        color: Colors.white.withOpacity(0.8),
                         blurRadius: 15,
                         offset: const Offset(-8, -8),
                       ),
@@ -239,10 +239,10 @@ class _ReactionTimerSectionState extends ConsumerState<ReactionTimerSection>
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
-                color: _getStatusColor().withValues(alpha: 0.1),
+                color: _getStatusColor().withOpacity(0.1),
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: _getStatusColor().withValues(alpha: 0.3),
+                  color: _getStatusColor().withOpacity(0.3),
                   width: 1,
                 ),
               ),
@@ -340,8 +340,8 @@ class _ReactionTimerSectionState extends ConsumerState<ReactionTimerSection>
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
-                    color.withValues(alpha: 0.8),
-                    color.withValues(alpha: 1.0),
+                    color.withOpacity(0.8),
+                    color.withOpacity(1.0),
                   ],
                 )
               : LinearGradient(colors: [Colors.grey[300]!, Colors.grey[400]!]),
@@ -349,14 +349,14 @@ class _ReactionTimerSectionState extends ConsumerState<ReactionTimerSection>
           boxShadow: isEnabled
               ? [
                   BoxShadow(
-                    color: color.withValues(alpha: 0.3),
+                    color: color.withOpacity(0.3),
                     blurRadius: 8,
                     offset: const Offset(0, 4),
                   ),
                 ]
               : [
                   BoxShadow(
-                    color: Colors.grey.withValues(alpha: 0.2),
+                    color: Colors.grey.withOpacity(0.2),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),

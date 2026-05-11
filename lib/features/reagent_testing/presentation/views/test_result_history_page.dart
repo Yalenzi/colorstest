@@ -192,7 +192,7 @@ class _TestResultHistoryPageState extends ConsumerState<TestResultHistoryPage>
         color: theme.colorScheme.surface,
         border: Border(
           bottom: BorderSide(
-            color: theme.colorScheme.outline.withValues(alpha: 0.2),
+            color: theme.colorScheme.outline.withOpacity(0.2),
           ),
         ),
       ),
