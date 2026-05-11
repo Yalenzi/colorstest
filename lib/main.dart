@@ -38,21 +38,25 @@ void main() async {
         await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
       }
     } catch (e, stack) {
-      runApp(MaterialApp(
-        home: Scaffold(
-          backgroundColor: Colors.red,
-          body: SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Text(
-                "Firebase Init Error:\n$e\n$stack",
-                style: const TextStyle(color: Colors.white, fontSize: 14),
+      if (e.toString().contains('duplicate-app')) {
+        // Ignore this specific error, Firebase is already initialized natively
+      } else {
+        runApp(MaterialApp(
+          home: Scaffold(
+            backgroundColor: Colors.red,
+            body: SafeArea(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(16),
+                child: Text(
+                  "Firebase Init Error:\n$e\n$stack",
+                  style: const TextStyle(color: Colors.white, fontSize: 14),
+                ),
               ),
             ),
           ),
-        ),
-      ));
-      return;
+        ));
+        return;
+      }
     }
 
     // Initialize Remote Config FIRST to ensure API keys are available
