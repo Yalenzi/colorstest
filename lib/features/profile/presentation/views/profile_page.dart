@@ -316,7 +316,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
     });
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: theme.colorScheme.surface,
       appBar: _buildModernAppBar(authState, theme),
       body: _buildBody(authState, theme),
     );
