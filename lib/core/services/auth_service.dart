@@ -120,20 +120,21 @@ class AuthService {
   // Sign in with Google
   Future<UserCredential?> signInWithGoogle() async {
     try {
+      Logger.info('🔐 AuthService: Starting Google Sign-In flow');
+      
       // Trigger the authentication flow
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
 
       if (googleUser == null) {
-        // User canceled the sign-in
+        Logger.info('🔐 AuthService: Google Sign-In cancelled by user');
         return null;
       }
 
       // Obtain the auth details from the request
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
 
       if (googleAuth.accessToken == null && googleAuth.idToken == null) {
-        throw Exception('Google token null');
+        throw Exception('Google authentication failed: tokens are null');
       }
 
       // Create a new credential
@@ -143,81 +144,58 @@ class AuthService {
       );
 
       // Sign in to Firebase with the Google credential
-      final UserCredential result = await _auth.signInWithCredential(
-        credential,
-      );
+      final UserCredential result = await _auth.signInWithCredential(credential);
 
-      // Check if this is a new user and create profile if needed
       if (result.user != null) {
-        // First, check if user profile exists in Firestore
-        Logger.info(
-          '🔧 AuthService: Checking if user profile exists for ${result.user!.uid}',
-        );
-        final existingProfile = await _firestoreService.getUserProfile(
-          result.user!.uid,
-        );
+        final user = result.user!;
+        Logger.info('🔐 AuthService: Firebase Auth successful for ${user.uid}');
+
+        // 🔥 CRITICAL: Clear any existing local data to prevent user data bleeding
+        await _clearAllLocalData();
+
+        // Check if this is a new user or profile is missing
+        final existingProfile = await _firestoreService.getUserProfile(user.uid);
 
         if (existingProfile == null) {
-          // No profile exists - create one (could be new or existing user without profile)
-          Logger.info(
-            '🔧 AuthService: No profile found, creating profile for ${result.user!.uid}',
+          Logger.info('🔧 AuthService: No profile found, creating one...');
+          
+          String username = _generateUsernameFromDisplayName(
+            user.displayName ?? user.email ?? 'User',
           );
-          Logger.info('🔧 AuthService: User email: ${result.user!.email}');
 
-          // 🔥 CRITICAL: Clear any existing local data before creating new user profile
-          await _clearAllLocalData();
+          final userModel = UserModel.fromFirebaseUser(
+            uid: user.uid,
+            email: user.email ?? '',
+            username: username,
+            photoUrl: user.photoURL,
+            displayName: user.displayName,
+            isEmailVerified: user.emailVerified,
+            phoneNumber: user.phoneNumber,
+            signInMethods: ['google.com'],
+            provider: 'google.com',
+          );
 
-          try {
-            // Generate username from display name (first name + last name)
-            String username = _generateUsernameFromDisplayName(
-              result.user!.displayName ?? result.user!.email ?? '',
-            );
-            Logger.info('🔧 AuthService: Generated username: $username');
-
-            final userModel = UserModel.fromFirebaseUser(
-              uid: result.user!.uid,
-              email: result.user!.email ?? '',
-              username: username,
-              photoUrl: result.user!.photoURL,
-              displayName: result.user!.displayName,
-              isEmailVerified: result.user!.emailVerified,
-              phoneNumber: result.user!.phoneNumber,
-              signInMethods: ['google.com'],
-            );
-
-            Logger.info(
-              '🔧 AuthService: User model created, calling FirestoreService.createUserProfile...',
-            );
-            await _firestoreService.createUserProfile(userModel);
-            Logger.info(
-              '✅ AuthService: Google user profile created successfully in Firestore',
-            );
-          } catch (e, stackTrace) {
-            Logger.info(
-              '❌ AuthService: Error creating Google user profile: $e',
-            );
-            Logger.info('❌ AuthService: Stack trace: $stackTrace');
-            // Don't throw here, let the user be signed in even if Firestore fails
-            Logger.info(
-              '⚠️ AuthService: Google user signed in but Firestore profile creation failed',
-            );
-          }
+          await _firestoreService.createUserProfile(userModel);
+          Logger.info('✅ AuthService: Google user profile created successfully');
         } else {
-          Logger.info(
-            '🔧 AuthService: Existing Google user with profile, updating last sign-in time',
-          );
-
-          // 🔥 CRITICAL: Clear any existing local data before signing in existing user
-          await _clearAllLocalData();
-
-          // Update last sign in time for existing users
-          await _updateUserLastSignIn(result.user!.uid);
+          Logger.info('🔧 AuthService: Profile exists, updating activity');
+          await _updateUserLastSignIn(user.uid);
+          
+          // Sync existing profile with current Google data if needed
+          if (existingProfile.photoUrl != user.photoURL || existingProfile.displayName != user.displayName) {
+             await _firestoreService.updateUserProfile(user.uid, {
+               'photoUrl': user.photoURL,
+               'displayName': user.displayName,
+               'lastSignInAt': FieldValue.serverTimestamp(),
+             });
+          }
         }
       }
 
       return result;
     } catch (e) {
-      throw Exception('Failed to sign in with Google: $e');
+      Logger.info('❌ AuthService: Google Sign-In crash prevented: $e');
+      throw Exception('Failed to sign in with Google. Please check your internet connection.');
     }
   }
 

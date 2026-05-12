@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../controllers/auth_controller.dart';
 import '../states/auth_state.dart';
+import '../../settings/presentation/providers/settings_providers.dart';
+import '../../../l10n/app_localizations.dart';
 
 class AuthPage extends ConsumerStatefulWidget {
   const AuthPage({super.key});
@@ -71,11 +73,24 @@ class _AuthPageState extends ConsumerState<AuthPage> {
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authControllerProvider);
+    final l10n = AppLocalizations.of(context)!;
+    final locale = ref.watch(localeProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isLoginMode ? '👤 Login' : '👤 Sign Up'),
+        title: Text(_isLoginMode ? l10n.labAccess : l10n.joinLaboratory),
         backgroundColor: Theme.of(context).primaryColor.withOpacity(0.1),
+        actions: [
+          TextButton.icon(
+            onPressed: () {
+              final newLanguage = locale.languageCode == 'en' ? 'ar' : 'en';
+              ref.read(settingsControllerProvider.notifier).updateLanguage(newLanguage);
+            },
+            icon: const Icon(Icons.language, size: 20),
+            label: Text(locale.languageCode == 'en' ? 'العربية' : 'English'),
+          ),
+          const SizedBox(width: 8),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -83,13 +98,13 @@ class _AuthPageState extends ConsumerState<AuthPage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const SizedBox(height: 20),
-            _buildWelcomeSection(),
+            _buildWelcomeSection(l10n),
             const SizedBox(height: 30),
-            _buildAuthForm(authState),
+            _buildAuthForm(authState, l10n),
             const SizedBox(height: 20),
-            _buildGoogleSignInButton(authState),
+            _buildGoogleSignInButton(authState, l10n),
             const SizedBox(height: 20),
-            _buildToggleAuthModeButton(),
+            _buildToggleAuthModeButton(l10n),
             if (authState is AuthError) ...[
               const SizedBox(height: 20),
               _buildErrorMessage(authState.message),
@@ -104,7 +119,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
     );
   }
 
-  Widget _buildWelcomeSection() {
+  Widget _buildWelcomeSection(AppLocalizations l10n) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -117,14 +132,12 @@ class _AuthPageState extends ConsumerState<AuthPage> {
             ),
             const SizedBox(height: 16),
             Text(
-              _isLoginMode ? 'Welcome Back!' : 'Create Account',
+              _isLoginMode ? l10n.welcomeBack : l10n.joinOurLab,
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Text(
-              _isLoginMode
-                  ? 'Sign in to access your reagent testing history'
-                  : 'Join us to save and track your test results',
+              _isLoginMode ? l10n.accessYourLab : l10n.startYourJourney,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
               textAlign: TextAlign.center,
             ),
@@ -134,7 +147,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
     );
   }
 
-  Widget _buildAuthForm(AuthState authState) {
+  Widget _buildAuthForm(AuthState authState, AppLocalizations l10n) {
     final isLoading = authState is AuthLoading;
 
     return Card(
@@ -148,21 +161,21 @@ class _AuthPageState extends ConsumerState<AuthPage> {
               if (!_isLoginMode) ...[
                 TextFormField(
                   controller: _usernameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Username',
-                    prefixIcon: Icon(Icons.person),
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: l10n.username,
+                    prefixIcon: const Icon(Icons.person),
+                    border: const OutlineInputBorder(),
                   ),
                   enabled: !isLoading,
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
-                      return 'Please enter a username';
+                      return l10n.pleaseEnterUsername;
                     }
                     if (value.trim().length < 3) {
-                      return 'Username must be at least 3 characters';
+                      return l10n.usernameMinLength;
                     }
                     if (!RegExp(r'^[a-zA-Z0-9_]+$').hasMatch(value.trim())) {
-                      return 'Username can only contain letters, numbers, and underscores';
+                      return l10n.usernameInvalidChars;
                     }
                     return null;
                   },
@@ -172,19 +185,19 @@ class _AuthPageState extends ConsumerState<AuthPage> {
 
               TextFormField(
                 controller: _emailController,
-                decoration: const InputDecoration(
-                  labelText: 'Email',
-                  prefixIcon: Icon(Icons.email),
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  labelText: l10n.email,
+                  prefixIcon: const Icon(Icons.email),
+                  border: const OutlineInputBorder(),
                 ),
                 keyboardType: TextInputType.emailAddress,
                 enabled: !isLoading,
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
-                    return 'Please enter your email';
+                    return l10n.pleaseEnterEmail;
                   }
                   if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value.trim())) {
-                    return 'Please enter a valid email address';
+                    return l10n.pleaseEnterValidEmail;
                   }
                   return null;
                 },
@@ -194,7 +207,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
               TextFormField(
                 controller: _passwordController,
                 decoration: InputDecoration(
-                  labelText: 'Password',
+                  labelText: l10n.password,
                   prefixIcon: const Icon(Icons.lock),
                   border: const OutlineInputBorder(),
                   suffixIcon: IconButton(
@@ -212,10 +225,10 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                 enabled: !isLoading,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter your password';
+                    return l10n.pleaseEnterPassword;
                   }
                   if (!_isLoginMode && value.length < 6) {
-                    return 'Password must be at least 6 characters';
+                    return l10n.passwordMinLength;
                   }
                   return null;
                 },
@@ -226,7 +239,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                 TextFormField(
                   controller: _confirmPasswordController,
                   decoration: InputDecoration(
-                    labelText: 'Confirm Password',
+                    labelText: l10n.confirmPassword,
                     prefixIcon: const Icon(Icons.lock_outline),
                     border: const OutlineInputBorder(),
                     suffixIcon: IconButton(
@@ -244,10 +257,10 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                   enabled: !isLoading,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please confirm your password';
+                      return l10n.pleaseConfirmPassword;
                     }
                     if (value != _passwordController.text) {
-                      return 'Passwords do not match';
+                      return l10n.passwordsDoNotMatch;
                     }
                     return null;
                   },
@@ -271,7 +284,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
                     : Text(
-                        _isLoginMode ? 'Sign In' : 'Create Account',
+                        _isLoginMode ? l10n.signIn : l10n.signUp,
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -285,7 +298,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
     );
   }
 
-  Widget _buildGoogleSignInButton(AuthState authState) {
+  Widget _buildGoogleSignInButton(AuthState authState, AppLocalizations l10n) {
     final isLoading = authState is AuthLoading;
 
     return Card(
@@ -293,9 +306,9 @@ class _AuthPageState extends ConsumerState<AuthPage> {
         padding: const EdgeInsets.all(20.0),
         child: Column(
           children: [
-            const Text(
-              'Or continue with',
-              style: TextStyle(color: Colors.grey),
+            Text(
+              l10n.orContinueWith,
+              style: const TextStyle(color: Colors.grey),
             ),
             const SizedBox(height: 16),
             OutlinedButton.icon(
@@ -309,7 +322,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                 },
               ),
               label: Text(
-                _isLoginMode ? 'Sign in with Google' : 'Sign up with Google',
+                _isLoginMode ? l10n.signInWithGoogle : l10n.signUpWithGoogle,
               ),
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(
@@ -327,7 +340,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
     );
   }
 
-  Widget _buildToggleAuthModeButton() {
+  Widget _buildToggleAuthModeButton(AppLocalizations l10n) {
     return TextButton(
       onPressed: _toggleAuthMode,
       child: RichText(
@@ -336,11 +349,11 @@ class _AuthPageState extends ConsumerState<AuthPage> {
           children: [
             TextSpan(
               text: _isLoginMode
-                  ? "Don't have an account? "
-                  : "Already have an account? ",
+                  ? l10n.dontHaveAccount + " "
+                  : l10n.alreadyHaveAccount + " ",
             ),
             TextSpan(
-              text: _isLoginMode ? 'Sign Up' : 'Sign In',
+              text: _isLoginMode ? l10n.signUp : l10n.signIn,
               style: TextStyle(
                 color: Theme.of(context).primaryColor,
                 fontWeight: FontWeight.bold,

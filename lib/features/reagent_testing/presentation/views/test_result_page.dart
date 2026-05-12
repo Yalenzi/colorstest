@@ -8,6 +8,7 @@ import 'package:reagentkit/features/reagent_testing/presentation/providers/reage
 import 'package:reagentkit/features/reagent_testing/presentation/states/test_result_state.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../core/utils/localization_helper.dart';
+import 'package:share_plus/share_plus.dart';
 
 class TestResultPage extends ConsumerWidget {
   const TestResultPage({super.key});
@@ -28,9 +29,22 @@ class TestResultPage extends ConsumerWidget {
         ),
         actions: [
           IconButton(
-            icon: Icon(HeroIcons.share),
+            icon: const Icon(HeroIcons.share),
             onPressed: () {
-              // TODO: Implement share functionality
+              if (state is TestResultLoaded) {
+                final result = state.testResult;
+                final substances = result.possibleSubstances.isNotEmpty
+                    ? result.possibleSubstances.join(', ')
+                    : l10n.unknownSubstance;
+                
+                final text = '🧪 ${l10n.testResult}:\n'
+                    '${l10n.reagent}: ${result.reagentName}\n'
+                    '${l10n.confidence}: ${result.confidencePercentage}%\n'
+                    '${l10n.possibleSubstances}: $substances\n'
+                    '${l10n.observedColorLabel}: ${result.observedColor}';
+                
+                Share.share(text, subject: l10n.testResult);
+              }
             },
           ),
         ],
@@ -160,16 +174,16 @@ class _ModernResultView extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: theme.colorScheme.surface,
                     borderRadius: BorderRadius.circular(24),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
+                        color: theme.shadowColor.withOpacity(0.05),
                         blurRadius: 20,
                         offset: const Offset(0, 10),
                       ),
                     ],
-                    border: Border.all(color: Colors.grey.shade100),
+                    border: Border.all(color: theme.dividerColor.withOpacity(0.1)),
                   ),
                   child: Column(
                     children: [
@@ -203,15 +217,15 @@ class _ModernResultView extends StatelessWidget {
                     width: double.infinity,
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: Colors.amber.shade50.withOpacity(0.3),
+                      color: theme.colorScheme.secondaryContainer.withOpacity(0.2),
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Colors.amber.shade100),
+                      border: Border.all(color: theme.colorScheme.secondaryContainer.withOpacity(0.5)),
                     ),
                     child: Text(
                       testResult.notes!,
                       style: theme.textTheme.bodyMedium?.copyWith(
                         height: 1.5,
-                        color: Colors.brown.shade800,
+                        color: theme.colorScheme.onSecondaryContainer,
                       ),
                     ),
                   ).animate().fadeIn(delay: 600.ms),
@@ -278,9 +292,9 @@ class _ModernResultView extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: const Color(0xFFF0F9FF),
+            color: theme.colorScheme.primaryContainer.withOpacity(0.1),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: const Color(0xFFBAE6FD)),
+            border: Border.all(color: theme.colorScheme.primaryContainer.withOpacity(0.3)),
           ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -288,10 +302,14 @@ class _ModernResultView extends StatelessWidget {
               const Icon(HeroIcons.sparkles, color: Color(0xFF0EA5E9), size: 20),
               const SizedBox(width: 12),
               Expanded(
-                child: Text(
-                  "The AI verified the reaction color against thousands of reference samples to ensure maximum accuracy.",
-                  style: TextStyle(color: Colors.blue.shade900, fontSize: 14, height: 1.4),
-                ),
+                  child: Text(
+                    "The AI verified the reaction color against thousands of reference samples to ensure maximum accuracy.",
+                    style: TextStyle(
+                      color: theme.colorScheme.onPrimaryContainer,
+                      fontSize: 14,
+                      height: 1.4,
+                    ),
+                  ),
               ),
             ],
           ),
@@ -360,20 +378,22 @@ class _ResultDetailTile extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.grey.shade50,
+        color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(color: theme.dividerColor.withOpacity(0.1)),
       ),
       child: Row(
         children: [
-          Icon(icon, color: Colors.grey.shade600, size: 22),
+          Icon(icon, color: theme.colorScheme.onSurfaceVariant.withOpacity(0.7), size: 22),
           const SizedBox(width: 16),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 label,
-                style: theme.textTheme.labelMedium?.copyWith(color: Colors.grey.shade600),
+                style: theme.textTheme.labelMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant.withOpacity(0.7),
+                ),
               ),
               const SizedBox(height: 2),
               Text(

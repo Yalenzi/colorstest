@@ -12,9 +12,10 @@ class UserModel {
 
   // Additional recommended fields based on Firebase best practices
   final String? phoneNumber; // From Firebase Auth
-  final List<String>
-  signInMethods; // Track how user signed in (email, google, etc.)
+  final List<String> signInMethods; // Track how user signed in (email, google, etc.)
   final String? preferredLanguage; // For localization
+  final String? provider; // e.g., 'google.com', 'password'
+  final DateTime? lastSignInAt; // Track last login
   final Map<String, dynamic>? customClaims; // For role-based access
   final bool isActive; // Account status
   final String? timezone; // User timezone
@@ -31,6 +32,8 @@ class UserModel {
     this.phoneNumber,
     this.signInMethods = const [],
     this.preferredLanguage,
+    this.provider,
+    this.lastSignInAt,
     this.customClaims,
     this.isActive = true,
     this.timezone,
@@ -50,6 +53,8 @@ class UserModel {
       phoneNumber: data['phoneNumber'],
       signInMethods: List<String>.from(data['signInMethods'] ?? []),
       preferredLanguage: data['preferredLanguage'],
+      provider: data['provider'],
+      lastSignInAt: data['lastSignInAt'] != null ? (data['lastSignInAt'] as Timestamp).toDate() : null,
       customClaims: data['customClaims'],
       isActive: data['isActive'] ?? true,
       timezone: data['timezone'],
@@ -69,6 +74,8 @@ class UserModel {
       'phoneNumber': phoneNumber,
       'signInMethods': signInMethods,
       'preferredLanguage': preferredLanguage,
+      'provider': provider,
+      'lastSignInAt': lastSignInAt != null ? Timestamp.fromDate(lastSignInAt!) : null,
       'customClaims': customClaims,
       'isActive': isActive,
       'timezone': timezone,
@@ -107,6 +114,8 @@ class UserModel {
       phoneNumber: entity.phoneNumber,
       signInMethods: entity.signInMethods,
       preferredLanguage: entity.preferredLanguage,
+      provider: entity.provider,
+      lastSignInAt: entity.lastSignInAt,
       customClaims: entity.customClaims,
       isActive: entity.isActive,
       timezone: entity.timezone,
@@ -125,6 +134,8 @@ class UserModel {
     String? phoneNumber,
     List<String> signInMethods = const [],
     String? preferredLanguage,
+    String? provider,
+    DateTime? lastSignInAt,
     String? timezone,
   }) {
     final now = DateTime.now();
@@ -139,6 +150,8 @@ class UserModel {
       phoneNumber: phoneNumber,
       signInMethods: signInMethods,
       preferredLanguage: preferredLanguage,
+      provider: provider,
+      lastSignInAt: lastSignInAt ?? now,
       isActive: true,
       timezone: timezone,
     );
@@ -156,6 +169,8 @@ class UserModel {
     String? phoneNumber,
     List<String>? signInMethods,
     String? preferredLanguage,
+    String? provider,
+    DateTime? lastSignInAt,
     Map<String, dynamic>? customClaims,
     bool? isActive,
     String? timezone,
@@ -172,6 +187,8 @@ class UserModel {
       phoneNumber: phoneNumber ?? this.phoneNumber,
       signInMethods: signInMethods ?? this.signInMethods,
       preferredLanguage: preferredLanguage ?? this.preferredLanguage,
+      provider: provider ?? this.provider,
+      lastSignInAt: lastSignInAt ?? this.lastSignInAt,
       customClaims: customClaims ?? this.customClaims,
       isActive: isActive ?? this.isActive,
       timezone: timezone ?? this.timezone,

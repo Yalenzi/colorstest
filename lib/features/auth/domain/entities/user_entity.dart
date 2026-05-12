@@ -12,6 +12,8 @@ class UserEntity {
   final List<String>
   signInMethods; // Track how user signed in (email, google, etc.)
   final String? preferredLanguage; // For localization
+  final String? provider; // e.g., 'google.com', 'password'
+  final DateTime? lastSignInAt; // Track last login
   final Map<String, dynamic>? customClaims; // For role-based access
   final bool isActive; // Account status
   final String? timezone; // User timezone
@@ -28,6 +30,8 @@ class UserEntity {
     this.phoneNumber,
     this.signInMethods = const [],
     this.preferredLanguage,
+    this.provider,
+    this.lastSignInAt,
     this.customClaims,
     this.isActive = true,
     this.timezone,

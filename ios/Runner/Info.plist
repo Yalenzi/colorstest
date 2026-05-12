@@ -48,14 +48,16 @@
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
-			<key>CFBundleURLName</key>
-			<string>REVERSED_CLIENT_ID</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>com.googleusercontent.apps.76342007759-mon4usabeh4a93i12i48eq6maj5qcdm5</string>
 			</array>
 		</dict>
 	</array>
+	<key>GIDClientID</key>
+	<string>76342007759-mon4usabeh4a93i12i48eq6maj5qcdm5.apps.googleusercontent.com</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>NSCameraUsageDescription</key>

@@ -29,6 +29,7 @@ dependencies:
   
   # Network connectivity
   connectivity_plus: ^6.0.5
+  share_plus: ^10.1.0
   
   # Internationalization
   flutter_localizations:

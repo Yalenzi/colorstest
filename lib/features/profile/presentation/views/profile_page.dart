@@ -516,7 +516,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                       ),
                       const SizedBox(width: 6),
                       Text(
-                        user.isEmailVerified ? l10n.verified : l10n.pending,
+                        user.isEmailVerified ? l10n.verified : 'Member',
                         style: const TextStyle(
                           fontSize: 12,
                           color: Colors.white,
