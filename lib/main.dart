@@ -90,11 +90,6 @@ class ReagentTestingApp extends ConsumerWidget {
         systemOverlayStyle: null, // Use default system overlay
       ),
       scaffoldBackgroundColor: const Color(0xFFF8FAFC),
-      cardTheme: CardTheme(
-        elevation: 0,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        color: Colors.white,
-      ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           elevation: 0,
@@ -139,11 +134,6 @@ class ReagentTestingApp extends ConsumerWidget {
         systemOverlayStyle: null, // Use default system overlay
       ),
       scaffoldBackgroundColor: const Color(0xFF0F172A),
-      cardTheme: CardTheme(
-        elevation: 0,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        color: const Color(0xFF1E293B),
-      ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           elevation: 0,
