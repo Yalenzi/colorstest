@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../controllers/auth_controller.dart';
 import '../states/auth_state.dart';
-import '../../settings/presentation/providers/settings_providers.dart';
-import '../../../l10n/app_localizations.dart';
+import '../../../settings/presentation/providers/settings_providers.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class AuthPage extends ConsumerStatefulWidget {
   const AuthPage({super.key});

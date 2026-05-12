@@ -283,6 +283,7 @@ class _ModernResultView extends StatelessWidget {
   }
 
   Widget _buildAIReasoningSection(BuildContext context, String notes) {
+    final theme = Theme.of(context);
     // Basic extraction if it's there
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -378,7 +379,7 @@ class _ResultDetailTile extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
+        color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: theme.dividerColor.withOpacity(0.1)),
       ),

@@ -1,5 +1,3 @@
-// ignore: unused_import
-import 'package:intl/intl.dart' as intl;
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -110,8 +108,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get aboutTheApp => '🧪 حول التطبيق:';
 
   @override
-  String get aboutTheAppContent =>
-      'هذا التطبيق يساعد المستخدمين على اختبار المواد بأمان باستخدام الكواشف الكيميائية.';
+  String get aboutTheAppContent => 'هذا التطبيق يساعد المستخدمين على اختبار المواد بأمان باستخدام الكواشف الكيميائية.';
 
   @override
   String get contact => '📧 للتواصل: testscolors@gmail.com';
@@ -141,8 +138,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get noReagentsAvailable => 'لا توجد كواشف متاحة';
 
   @override
-  String get unableToLoadReagentData =>
-      'غير قادر على تحميل بيانات الكواشف من الملفات.\nيرجى التحقق من اتصال الإنترنت والمحاولة مرة أخرى.';
+  String get unableToLoadReagentData => 'غير قادر على تحميل بيانات الكواشف من الملفات.\nيرجى التحقق من اتصال الإنترنت والمحاولة مرة أخرى.';
 
   @override
   String get retryLoading => 'إعادة تحميل';
@@ -164,8 +160,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get readyToStart => 'جاهز لبدء الاختبار';
 
   @override
-  String get readyToStartDescription =>
-      'يرجى التأكد من قراءة وفهم جميع تعليمات السلامة قبل المتابعة مع الاختبار.';
+  String get readyToStartDescription => 'يرجى التأكد من قراءة وفهم جميع تعليمات السلامة قبل المتابعة مع الاختبار.';
 
   @override
   String get testProcedure => 'إجراء الاختبار';
@@ -194,8 +189,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get observedColor => 'اللون المُلاحظ';
 
   @override
-  String get observedColorDescription =>
-      'اختر اللون الذي لاحظته بعد إضافة الكاشف';
+  String get observedColorDescription => 'اختر اللون الذي لاحظته بعد إضافة الكاشف';
 
   @override
   String get tapColorInstruction => 'اضغط على اللون الذي يطابق ما لاحظته';
@@ -204,8 +198,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get testNotes => 'ملاحظات الاختبار';
 
   @override
-  String get testNotesPlaceholder =>
-      'أضف أي ملاحظات أو مشاهدات إضافية حول الاختبار...';
+  String get testNotesPlaceholder => 'أضف أي ملاحظات أو مشاهدات إضافية حول الاختبار...';
 
   @override
   String get completeTest => 'إكمال الاختبار';
@@ -229,11 +222,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get testInstructions => 'تعليمات الاختبار';
 
   @override
+  String get references => 'المراجع العلمية';
+
+  @override
   String get safetyAcknowledgment => 'إقرار السلامة';
 
   @override
-  String get safetyAcknowledgmentText =>
-      'لقد قرأت وفهمت جميع تعليمات السلامة وسأتبع إجراءات السلامة المناسبة أثناء الاختبار.';
+  String get safetyAcknowledgmentText => 'لقد قرأت وفهمت جميع تعليمات السلامة وسأتبع إجراءات السلامة المناسبة أثناء الاختبار.';
 
   @override
   String get startTest => 'بدء الاختبار';
@@ -274,8 +269,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get noTestResultsYet => 'لا توجد نتائج اختبار بعد';
 
   @override
-  String get completeTestsToSeeHistory =>
-      'أكمل بعض الاختبارات لرؤية تاريخك هنا';
+  String get completeTestsToSeeHistory => 'أكمل بعض الاختبارات لرؤية تاريخك هنا';
 
   @override
   String get searchBySubstanceOrNotes => 'البحث بالمادة أو الملاحظات...';
@@ -348,15 +342,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get deleteTest => 'حذف نتيجة الاختبار';
 
   @override
-  String get deleteTestConfirmation =>
-      'هل أنت متأكد من أنك تريد حذف نتيجة هذا الاختبار؟';
+  String get deleteTestConfirmation => 'هل أنت متأكد من أنك تريد حذف نتيجة هذا الاختبار؟';
 
   @override
   String get confirmExit => 'تأكيد الخروج';
 
   @override
-  String get testProgressWillBeLost =>
-      'ستفقد تقدم الاختبار. هل أنت متأكد من أنك تريد الخروج؟';
+  String get testProgressWillBeLost => 'ستفقد تقدم الاختبار. هل أنت متأكد من أنك تريد الخروج؟';
 
   @override
   String get exit => 'خروج';
@@ -398,8 +390,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get syncingToCloud => 'مزامنة مع السحابة...';
 
   @override
-  String get clearAllConfirmation =>
-      'هل أنت متأكد من رغبتك في مسح جميع نتائج الاختبار؟ لا يمكن التراجع عن هذا الإجراء.';
+  String get clearAllConfirmation => 'هل أنت متأكد من رغبتك في مسح جميع نتائج الاختبار؟ لا يمكن التراجع عن هذا الإجراء.';
 
   @override
   String get clearAll => 'مسح الكل';
@@ -408,8 +399,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get captureImage => 'التقاط صورة';
 
   @override
-  String get captureImageDescription =>
-      'التقط صورة لنتيجة اختبارك لتحليل الذكاء الاصطناعي';
+  String get captureImageDescription => 'التقط صورة لنتيجة اختبارك لتحليل الذكاء الاصطناعي';
 
   @override
   String get analyzeWithAI => 'تحليل بالذكاء الاصطناعي';
@@ -469,8 +459,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get fromGallery => ' الصور';
 
   @override
-  String get uploadImageDescription =>
-      'ارفع صورة لنتيجة اختبارك لتحليل الذكاء الاصطناعي';
+  String get uploadImageDescription => 'ارفع صورة لنتيجة اختبارك لتحليل الذكاء الاصطناعي';
 
   @override
   String get red => 'أحمر';
@@ -611,8 +600,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get safetyReminder => 'تذكير السلامة';
 
   @override
-  String get safetyReminderText =>
-      'ارتدي دائماً معدات الحماية عند التعامل مع الكواشف. تأكد من التهوية المناسبة واتبع بروتوكولات السلامة.';
+  String get safetyReminderText => 'ارتدي دائماً معدات الحماية عند التعامل مع الكواشف. تأكد من التهوية المناسبة واتبع بروتوكولات السلامة.';
 
   @override
   String get accountInformation => 'معلومات الحساب';
@@ -702,8 +690,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get usernameMinLength => 'يجب أن يكون اسم المستخدم على الأقل 3 أحرف';
 
   @override
-  String get usernameInvalidChars =>
-      'يمكن أن يحتوي اسم المستخدم على أحرف وأرقام وشرطات سفلية فقط';
+  String get usernameInvalidChars => 'يمكن أن يحتوي اسم المستخدم على أحرف وأرقام وشرطات سفلية فقط';
 
   @override
   String get pleaseEnterEmail => 'يرجى إدخال بريدك الإلكتروني';
@@ -733,8 +720,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get resetPasswordTitle => 'إعادة تعيين كلمة المرور';
 
   @override
-  String get resetPasswordDescription =>
-      'أدخل عنوان بريدك الإلكتروني وسنرسل لك تعليمات لإعادة تعيين كلمة المرور.';
+  String get resetPasswordDescription => 'أدخل عنوان بريدك الإلكتروني وسنرسل لك تعليمات لإعادة تعيين كلمة المرور.';
 
   @override
   String get sendResetEmail => 'إرسال بريد الإعادة';
@@ -743,12 +729,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get backToLogin => 'العودة لتسجيل الدخول';
 
   @override
-  String get enterEmailToReset =>
-      'أدخل عنوان بريدك الإلكتروني لإعادة تعيين كلمة المرور';
+  String get enterEmailToReset => 'أدخل عنوان بريدك الإلكتروني لإعادة تعيين كلمة المرور';
 
   @override
-  String get passwordResetEmailSent =>
-      'تم إرسال بريد إعادة تعيين كلمة المرور! تحقق من صندوق الوارد.';
+  String get passwordResetEmailSent => 'تم إرسال بريد إعادة تعيين كلمة المرور! تحقق من صندوق الوارد.';
 
   @override
   String get resetEmailSending => 'جاري إرسال بريد الإعادة...';

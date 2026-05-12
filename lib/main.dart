@@ -10,7 +10,6 @@ import 'features/reagent_testing/data/services/remote_config_service.dart';
 import 'core/utils/logger.dart';
 import 'firebase_options.dart';
 import 'core/globals.dart';
-import 'dart:async';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -91,7 +90,7 @@ class ReagentTestingApp extends ConsumerWidget {
         systemOverlayStyle: null, // Use default system overlay
       ),
       scaffoldBackgroundColor: const Color(0xFFF8FAFC),
-      cardTheme: CardThemeData(
+      cardTheme: CardTheme(
         elevation: 0,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         color: Colors.white,
@@ -140,7 +139,7 @@ class ReagentTestingApp extends ConsumerWidget {
         systemOverlayStyle: null, // Use default system overlay
       ),
       scaffoldBackgroundColor: const Color(0xFF0F172A),
-      cardTheme: CardThemeData(
+      cardTheme: CardTheme(
         elevation: 0,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         color: const Color(0xFF1E293B),
