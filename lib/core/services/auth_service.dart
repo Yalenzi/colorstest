@@ -120,84 +120,112 @@ class AuthService {
 
   // Sign in with Google
   Future<UserCredential?> signInWithGoogle() async {
+    GoogleSignInAccount? googleUser;
+
+    // Stage 1: Launch Google Sign-In UI
     try {
       Logger.info('🔐 AuthService: Starting Google Sign-In flow');
-      
-      // Trigger the authentication flow
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      googleUser = await _googleSignIn.signIn();
+    } catch (e) {
+      Logger.info('❌ AuthService: Google Sign-In UI failed: $e');
+      // Sign out to reset any partial Google state
+      try { await _googleSignIn.signOut(); } catch (_) {}
+      throw Exception('Google Sign-In is unavailable. Please check your configuration and try again.');
+    }
 
-      if (googleUser == null) {
-        Logger.info('🔐 AuthService: Google Sign-In cancelled by user');
-        return null;
-      }
+    if (googleUser == null) {
+      Logger.info('🔐 AuthService: Google Sign-In cancelled by user');
+      return null;
+    }
 
-      // Obtain the auth details from the request
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+    // Stage 2: Get Google Auth tokens
+    GoogleSignInAuthentication googleAuth;
+    try {
+      googleAuth = await googleUser.authentication;
+    } catch (e) {
+      Logger.info('❌ AuthService: Failed to get Google auth tokens: $e');
+      try { await _googleSignIn.signOut(); } catch (_) {}
+      throw Exception('Failed to authenticate with Google. Please try again.');
+    }
 
-      if (googleAuth.accessToken == null && googleAuth.idToken == null) {
-        throw Exception('Google authentication failed: tokens are null');
-      }
+    if (googleAuth.accessToken == null && googleAuth.idToken == null) {
+      Logger.info('❌ AuthService: Google tokens are null');
+      try { await _googleSignIn.signOut(); } catch (_) {}
+      throw Exception('Google authentication returned invalid tokens.');
+    }
 
-      // Create a new credential
+    // Stage 3: Sign in to Firebase with Google credential
+    UserCredential result;
+    try {
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
+      result = await _auth.signInWithCredential(credential);
+    } catch (e) {
+      Logger.info('❌ AuthService: Firebase sign-in with Google credential failed: $e');
+      try { await _googleSignIn.signOut(); } catch (_) {}
+      throw Exception('Failed to sign in with Google. Please try again.');
+    }
 
-      // Sign in to Firebase with the Google credential
-      final UserCredential result = await _auth.signInWithCredential(credential);
+    if (result.user == null) {
+      Logger.info('❌ AuthService: Firebase returned null user after Google sign-in');
+      return null;
+    }
 
-      if (result.user != null) {
-        final user = result.user!;
-        Logger.info('🔐 AuthService: Firebase Auth successful for ${user.uid}');
+    final user = result.user!;
+    Logger.info('🔐 AuthService: Firebase Auth successful for ${user.uid}');
 
-        // 🔥 CRITICAL: Clear any existing local data to prevent user data bleeding
-        await _clearAllLocalData();
+    // Stage 4: Create or update user profile in Firestore
+    // NOTE: _clearAllLocalData is called AFTER successful profile load/creation
+    //       to prevent race conditions with auth state listener
+    try {
+      final existingProfile = await _firestoreService.getUserProfile(user.uid);
 
-        // Check if this is a new user or profile is missing
-        final existingProfile = await _firestoreService.getUserProfile(user.uid);
+      if (existingProfile == null) {
+        Logger.info('🔧 AuthService: No profile found, creating one...');
 
-        if (existingProfile == null) {
-          Logger.info('🔧 AuthService: No profile found, creating one...');
-          
-          String username = _generateUsernameFromDisplayName(
-            user.displayName ?? user.email ?? 'User',
-          );
+        String username = _generateUsernameFromDisplayName(
+          user.displayName ?? user.email ?? 'User',
+        );
 
-          final userModel = UserModel.fromFirebaseUser(
-            uid: user.uid,
-            email: user.email ?? '',
-            username: username,
-            photoUrl: user.photoURL,
-            displayName: user.displayName,
-            isEmailVerified: user.emailVerified,
-            phoneNumber: user.phoneNumber,
-            signInMethods: ['google.com'],
-            provider: 'google.com',
-          );
+        final userModel = UserModel.fromFirebaseUser(
+          uid: user.uid,
+          email: user.email ?? '',
+          username: username,
+          photoUrl: user.photoURL,
+          displayName: user.displayName,
+          isEmailVerified: user.emailVerified,
+          phoneNumber: user.phoneNumber,
+          signInMethods: ['google.com'],
+          provider: 'google.com',
+        );
 
-          await _firestoreService.createUserProfile(userModel);
-          Logger.info('✅ AuthService: Google user profile created successfully');
-        } else {
-          Logger.info('🔧 AuthService: Profile exists, updating activity');
-          await _updateUserLastSignIn(user.uid);
-          
-          // Sync existing profile with current Google data if needed
-          if (existingProfile.photoUrl != user.photoURL || existingProfile.displayName != user.displayName) {
-             await _firestoreService.updateUserProfile(user.uid, {
-               'photoUrl': user.photoURL,
-               'displayName': user.displayName,
-               'lastSignInAt': firestore.FieldValue.serverTimestamp(),
-             });
-          }
+        await _firestoreService.createUserProfile(userModel);
+        Logger.info('✅ AuthService: Google user profile created successfully');
+      } else {
+        Logger.info('🔧 AuthService: Profile exists, updating activity');
+        await _updateUserLastSignIn(user.uid);
+
+        // Sync existing profile with current Google data if needed
+        if (existingProfile.photoUrl != user.photoURL || existingProfile.displayName != user.displayName) {
+          await _firestoreService.updateUserProfile(user.uid, {
+            'photoUrl': user.photoURL,
+            'displayName': user.displayName,
+            'lastSignInAt': firestore.FieldValue.serverTimestamp(),
+          });
         }
       }
 
-      return result;
+      // 🔥 Clear local data AFTER profile is safely loaded/created
+      await _clearAllLocalData();
     } catch (e) {
-      Logger.info('❌ AuthService: Google Sign-In crash prevented: $e');
-      throw Exception('Failed to sign in with Google. Please check your internet connection.');
+      Logger.info('⚠️ AuthService: Profile creation/update failed (non-fatal): $e');
+      // Don't throw — user is already authenticated in Firebase
+      // Profile will be retried by the auth state listener
     }
+
+    return result;
   }
 
   // Sign out

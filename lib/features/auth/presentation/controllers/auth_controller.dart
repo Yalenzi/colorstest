@@ -32,12 +32,6 @@ class AuthController extends StateNotifier<AuthState> {
     _authService.authStateChanges.listen((User? user) async {
       if (user != null) {
         try {
-          // Wait a moment for Firebase to fully initialize
-          await Future.delayed(const Duration(milliseconds: 300));
-
-          // 🔥 CRITICAL: Clear all local data when user authentication state changes
-          await _clearAllLocalDataOnAuthChange();
-
           // Retry logic for loading user profile
           UserModel? userProfile;
           int retryCount = 0;

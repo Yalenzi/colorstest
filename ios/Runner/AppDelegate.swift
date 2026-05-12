@@ -9,8 +9,13 @@ import Firebase
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
-    // Firebase and Google Sign-In are handled by Flutter plugins automatically
-    
+
+    // 🔥 CRITICAL: Initialize Firebase BEFORE plugin registration
+    // This ensures Google Sign-In can read GIDClientID from FirebaseApp
+    if FirebaseApp.app() == nil {
+      FirebaseApp.configure()
+    }
+
     GeneratedPluginRegistrant.register(with: self)
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
@@ -20,7 +25,7 @@ import Firebase
     open url: URL,
     options: [UIApplication.OpenURLOptionsKey : Any] = [:]
   ) -> Bool {
-    // Handle Google Sign-In URL
+    // Handle Google Sign-In URL callback
     if GIDSignIn.sharedInstance.handle(url) {
       return true
     }
