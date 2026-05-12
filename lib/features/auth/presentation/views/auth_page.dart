@@ -349,8 +349,8 @@ class _AuthPageState extends ConsumerState<AuthPage> {
           children: [
             TextSpan(
               text: _isLoginMode
-                  ? l10n.dontHaveAccount + " "
-                  : l10n.alreadyHaveAccount + " ",
+                  ? '${l10n.dontHaveAccount} '
+                  : '${l10n.alreadyHaveAccount} ',
             ),
             TextSpan(
               text: _isLoginMode ? l10n.signUp : l10n.signIn,

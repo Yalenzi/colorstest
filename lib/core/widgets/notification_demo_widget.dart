@@ -109,7 +109,6 @@ class _TopNotificationWidgetState extends State<TopNotificationWidget>
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final isError = widget.isError;
 
     return Positioned(

@@ -291,37 +291,63 @@ class ColorAnalysisEngine {
   }
 
   Color _singleColorFromName(String n) {
-    if (n.contains('dark red') || n.contains('darkred') || n.contains('maroon'))
+    if (n.contains('dark red') || n.contains('darkred') || n.contains('maroon')) {
       return const Color(0xFF8B0000);
-    if (n.contains('red orange') || n.contains('redorange'))
+    }
+    if (n.contains('red orange') || n.contains('redorange')) {
       return const Color(0xFFFF4500);
-    if (n.contains('dark brown') || n.contains('darkbrown'))
+    }
+    if (n.contains('dark brown') || n.contains('darkbrown')) {
       return const Color(0xFF3E1F00);
-    if (n.contains('dark blue') || n.contains('darkblue') || n.contains('navy'))
+    }
+    if (n.contains('dark blue') || n.contains('darkblue') || n.contains('navy')) {
       return const Color(0xFF00008B);
-    if (n.contains('bright blue') || n.contains('light blue'))
+    }
+    if (n.contains('bright blue') || n.contains('light blue')) {
       return const Color(0xFF03A9F4);
-    if (n.contains('dark green') || n.contains('darkgreen'))
+    }
+    if (n.contains('dark green') || n.contains('darkgreen')) {
       return const Color(0xFF1B5E20);
-    if (n.contains('pale green') || n.contains('light green'))
+    }
+    if (n.contains('pale green') || n.contains('light green')) {
       return const Color(0xFFA5D6A7);
-    if (n.contains('light yellow') || n.contains('pale yellow'))
+    }
+    if (n.contains('light yellow') || n.contains('pale yellow')) {
       return const Color(0xFFFFF9C4);
-    if (n.contains('red'))    return const Color(0xFFE53935);
-    if (n.contains('orange')) return const Color(0xFFF57C00);
-    if (n.contains('brown'))  return const Color(0xFF5D4037);
-    if (n.contains('yellow')) return const Color(0xFFFDD835);
-    if (n.contains('green'))  return const Color(0xFF43A047);
-    if (n.contains('blue'))   return const Color(0xFF1E88E5);
-    if (n.contains('purple') || n.contains('violet'))
-                              return const Color(0xFF7B1FA2);
-    if (n.contains('pink') || n.contains('magenta'))
-                              return const Color(0xFFE91E63);
-    if (n.contains('black'))  return const Color(0xFF212121);
-    if (n.contains('white') || n.contains('clear') || n.contains('no change'))
-                              return const Color(0xFFF5F5F5);
-    if (n.contains('grey') || n.contains('gray'))
-                              return const Color(0xFF9E9E9E);
+    }
+    if (n.contains('red')) {
+      return const Color(0xFFE53935);
+    }
+    if (n.contains('orange')) {
+      return const Color(0xFFF57C00);
+    }
+    if (n.contains('brown')) {
+      return const Color(0xFF5D4037);
+    }
+    if (n.contains('yellow')) {
+      return const Color(0xFFFDD835);
+    }
+    if (n.contains('green')) {
+      return const Color(0xFF43A047);
+    }
+    if (n.contains('blue')) {
+      return const Color(0xFF1E88E5);
+    }
+    if (n.contains('purple') || n.contains('violet')) {
+      return const Color(0xFF7B1FA2);
+    }
+    if (n.contains('pink') || n.contains('magenta')) {
+      return const Color(0xFFE91E63);
+    }
+    if (n.contains('black')) {
+      return const Color(0xFF212121);
+    }
+    if (n.contains('white') || n.contains('clear') || n.contains('no change')) {
+      return const Color(0xFFF5F5F5);
+    }
+    if (n.contains('grey') || n.contains('gray')) {
+      return const Color(0xFF9E9E9E);
+    }
     // Fallback
     return const Color(0xFF9E9E9E);
   }

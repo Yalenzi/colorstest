@@ -89,7 +89,7 @@ class AIService {
           .map((e) => {'drugName': e.drugName, 'color': e.color})
           .toList();
 
-      final jsonString = await _geminiService!.analyzeReagentTestImage(
+      final jsonString = await _geminiService.analyzeReagentTestImage(
         imageFile: imageFile,
         reagentName: reagent.reagentName,
         drugResults: drugResultsJson,

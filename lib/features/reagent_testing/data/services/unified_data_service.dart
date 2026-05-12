@@ -115,18 +115,12 @@ class UnifiedDataService {
   List<ReagentModel>? _cachedReagents;
   Map<String, ReagentSafetyData>? _cachedSafety;
   Map<String, List<String>>? _cachedReferences;
-  DateTime? _cacheTimestamp;
   String _cacheVersion = '';
 
   /// Whether Firebase data has been successfully loaded at least once
   /// in this app session. When true, local JSON fallback is disabled.
   bool _firebaseLoadedAtLeastOnce = false;
 
-  // TTL: 30 minutes for the primary cache. After this, a background refresh
-  // is attempted. The cache is still served (as stale) while refreshing.
-  static const Duration _cacheTtl       = Duration(minutes: 30);
-  // Max stale age: 2 hours. Beyond this, stale cache is rejected entirely.
-  static const Duration _maxStaleAge    = Duration(hours: 2);
   // Local JSON version (bumped manually when you update the asset files)
   static const String   _localVersion   = '1.0.0-local';
 
@@ -570,35 +564,6 @@ class UnifiedDataService {
 
   // ── Private: Cache ─────────────────────────────────────────────────────────
 
-  /// Returns true if the in-memory cache is fresh AND the version matches
-  /// the latest Firebase version (P4 — version comparison).
-  Future<bool> _isCacheStillValid() async {
-    if (_cachedReagents == null || _cacheTimestamp == null) return false;
-
-    // TTL check
-    final age = DateTime.now().difference(_cacheTimestamp!);
-    if (age >= _cacheTtl) {
-      Logger.info('🕐 [Cache] TTL expired (${age.inMinutes}min). '
-          'Will attempt Firebase re-fetch.');
-      return false;
-    }
-
-    // P4: Version check — reject cache if Firebase has a newer version
-    if (_lastDataSource == DataSource.firebase) {
-      final firebaseVersion = _remoteConfig.getReagentVersion();
-      if (firebaseVersion.isNotEmpty && firebaseVersion != _cacheVersion) {
-        Logger.warning(
-          '🔄 [Cache] Version mismatch — '
-          'cached: "$_cacheVersion" | Firebase: "$firebaseVersion". '
-          'Cache REJECTED.',
-        );
-        return false;
-      }
-    }
-
-    return true;
-  }
-
   void _commitCache(
     DataSource source,
     List<ReagentModel> reagents,
@@ -606,7 +571,6 @@ class UnifiedDataService {
   ) {
     _cachedReagents   = reagents;
     _lastDataSource   = source;
-    _cacheTimestamp   = DateTime.now();
     _cacheVersion     = version;
     Logger.info(
       '💾 [Cache] Committed [${source.name}] '
@@ -618,7 +582,6 @@ class UnifiedDataService {
     _cachedReagents   = null;
     _cachedSafety     = null;
     _cachedReferences = null;
-    _cacheTimestamp   = null;
     _cacheVersion     = '';
     Logger.info('🗑 [Cache] Invalidated');
   }

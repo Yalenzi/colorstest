@@ -296,7 +296,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
   Widget build(BuildContext context) {
     final authState = ref.watch(authControllerProvider);
     final theme = Theme.of(context);
-    final l10n = AppLocalizations.of(context)!;
 
     // Set context for the auth controller
     WidgetsBinding.instance.addPostFrameCallback((_) {

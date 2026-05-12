@@ -88,38 +88,38 @@ class DecisionEngine {
     required String? spectralColorName,
     required List<String> spectralSubstances,
   }) {
-    final S_ai    = _aiScoreFromLevel(aiRawLevel);
-    final S_match = spectralScore.clamp(0.0, 1.0);
+    final sAi    = _aiScoreFromLevel(aiRawLevel);
+    final sMatch = spectralScore.clamp(0.0, 1.0);
     final geminiAvailable = aiRawLevel != null;
 
     // ── Determine weights ──────────────────────────────────────────────────
-    double W_ai, W_match;
+    double wAi, wMatch;
 
     if (!geminiAvailable) {
       // No Gemini → pure spectral
-      W_ai = 0.0; W_match = 1.0;
-    } else if (S_match < 0.30) {
+      wAi = 0.0; wMatch = 1.0;
+    } else if (sMatch < 0.30) {
       // Noisy / low-quality image → trust AI more
-      W_ai = 0.85; W_match = 0.15;
-    } else if (S_ai >= _aiHighThreshold) {
-      W_ai = 0.65; W_match = 0.35;
-    } else if (S_ai >= _aiLowThreshold) {
-      W_ai = 0.50; W_match = 0.50;
+      wAi = 0.85; wMatch = 0.15;
+    } else if (sAi >= _aiHighThreshold) {
+      wAi = 0.65; wMatch = 0.35;
+    } else if (sAi >= _aiLowThreshold) {
+      wAi = 0.50; wMatch = 0.50;
     } else {
-      W_ai = 0.35; W_match = 0.65;
+      wAi = 0.35; wMatch = 0.65;
     }
 
-    // Enforce W_ai + W_match == 1.0
-    assert((W_ai + W_match - 1.0).abs() < 1e-9, 'Weights must sum to 1');
+    // Enforce wAi + wMatch == 1.0
+    assert((wAi + wMatch - 1.0).abs() < 1e-9, 'Weights must sum to 1');
 
     // ── Decide which source is authoritative ──────────────────────────────
-    final diff = (S_ai - S_match).abs();
+    final diff = (sAi - sMatch).abs();
     bool hadConflict = false;
     String resolutionPath;
     List<String> resolvedSubstances;
     String resolvedColor;
 
-    if (S_ai > _aiHighThreshold && S_match < _spectralHighThreshold * 0.85) {
+    if (sAi > _aiHighThreshold && sMatch < _spectralHighThreshold * 0.85) {
       // Branch A: AI strongly confident, spectral disagrees
       //  → trust AI, but penalise confidence
       hadConflict = true;
@@ -128,13 +128,13 @@ class DecisionEngine {
       resolvedColor      = aiColorDesc ?? spectralColorName ?? 'Unknown';
 
       // Penalise confidence for conflict
-      final rawConf = W_ai * S_ai + W_match * S_match;
+      final rawConf = wAi * sAi + wMatch * sMatch;
       final penalised = (rawConf - 0.10).clamp(0.0, 1.0);
       return DecisionEngineResult(
-        spectralMatchScore:  S_match,
-        aiScore:             S_ai,
-        weightAI:            W_ai,
-        weightMatch:         W_match,
+        spectralMatchScore:  sMatch,
+        aiScore:             sAi,
+        weightAI:            wAi,
+        weightMatch:         wMatch,
         confidence:          penalised,
         resolvedSubstances:  resolvedSubstances,
         resolvedColorDescription: resolvedColor,
@@ -142,7 +142,7 @@ class DecisionEngine {
         resolutionPath:      resolutionPath,
       );
 
-    } else if (S_ai < _aiLowThreshold && S_match > _spectralHighThreshold) {
+    } else if (sAi < _aiLowThreshold && sMatch > _spectralHighThreshold) {
       // Branch B: AI uncertain, spectral is confident
       //  → trust spectral
       hadConflict = true;
@@ -165,17 +165,17 @@ class DecisionEngine {
     }
 
     // ── Confidence formula ─────────────────────────────────────────────────
-    //   C = W_ai × S_ai + W_match × S_match
-    double confidence = W_ai * S_ai + W_match * S_match;
+    //   C = wAi × sAi + wMatch × sMatch
+    double confidence = wAi * sAi + wMatch * sMatch;
     if (resolutionPath.startsWith('BRANCH_D')) {
       confidence = (confidence - 0.05).clamp(0.0, 1.0);
     }
 
     return DecisionEngineResult(
-      spectralMatchScore:  S_match,
-      aiScore:             S_ai,
-      weightAI:            W_ai,
-      weightMatch:         W_match,
+      spectralMatchScore:  sMatch,
+      aiScore:             sAi,
+      weightAI:            wAi,
+      weightMatch:         wMatch,
       confidence:          confidence,
       resolvedSubstances:  resolvedSubstances,
       resolvedColorDescription: resolvedColor,
