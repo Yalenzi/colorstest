@@ -2,33 +2,48 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+
 	<key>CLIENT_ID</key>
-	<string>76342007759-lfrim4jh8fkntca1o7mlsvldaaqbomaa.apps.googleusercontent.com</string>
+	<string>76342007759-mon4usabeh4a93i12i48eq6maj5qcdm5.apps.googleusercontent.com</string>
+
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.76342007759-lfrim4jh8fkntca1o7mlsvldaaqbomaa</string>
+	<string>com.googleusercontent.apps.76342007759-mon4usabeh4a93i12i48eq6maj5qcdm5</string>
+
 	<key>API_KEY</key>
 	<string>AIzaSyDpek992tVFKJe4OK5eLSvj1bAGqrl5Lmw</string>
+
 	<key>GCM_SENDER_ID</key>
 	<string>76342007759</string>
+
 	<key>PLIST_VERSION</key>
 	<string>1</string>
+
 	<key>BUNDLE_ID</key>
-	<string>com.example.reagentColorsTest</string>
+	<string>com.yousef.ctds</string>
+
 	<key>PROJECT_ID</key>
 	<string>flutter-reagent-test</string>
+
 	<key>STORAGE_BUCKET</key>
 	<string>flutter-reagent-test.firebasestorage.app</string>
+
 	<key>IS_ADS_ENABLED</key>
-	<false></false>
+	<false/>
+
 	<key>IS_ANALYTICS_ENABLED</key>
-	<false></false>
+	<false/>
+
 	<key>IS_APPINVITE_ENABLED</key>
-	<true></true>
+	<true/>
+
 	<key>IS_GCM_ENABLED</key>
-	<true></true>
+	<true/>
+
 	<key>IS_SIGNIN_ENABLED</key>
-	<true></true>
+	<true/>
+
 	<key>GOOGLE_APP_ID</key>
-	<string>1:76342007759:ios:585b35dec8e2e35b3164ba</string>
+	<string>1:76342007759:ios:1b7c98b9a9d3d0e73164ba</string>
+
 </dict>
 </plist>
