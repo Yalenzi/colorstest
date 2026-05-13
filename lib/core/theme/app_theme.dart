@@ -33,7 +33,7 @@ class AppTheme {
         ),
         systemOverlayStyle: SystemUiOverlayStyle.dark, // Status bar icons
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: AppColors.lightSurface,
         elevation: 0,
         shape: RoundedRectangleBorder(
@@ -120,7 +120,7 @@ class AppTheme {
         ),
         systemOverlayStyle: SystemUiOverlayStyle.light, // Status bar icons
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: AppColors.darkSurface,
         elevation: 0,
         shape: RoundedRectangleBorder(
