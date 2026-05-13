@@ -18,7 +18,7 @@ class ReagentHeaderCard extends StatelessWidget {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: Colors.grey.shade300),
+        side: BorderSide(color: theme.colorScheme.outlineVariant),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -65,7 +65,7 @@ class ReagentHeaderCard extends StatelessWidget {
       ),
       child: Icon(
         HeroIcons.beaker, // Chemistry beaker icon for reagent testing
-        color: Colors.white,
+        color: theme.colorScheme.onPrimary,
         size: 28,
       ),
     );

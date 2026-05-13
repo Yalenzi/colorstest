@@ -76,7 +76,7 @@ class _TestExecutionPageState extends ConsumerState<TestExecutionPage> {
             borderRadius: BorderRadius.circular(28),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
+                color: theme.shadowColor.withOpacity(0.1),
                 blurRadius: 20,
                 offset: const Offset(0, 8),
               ),

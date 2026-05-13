@@ -70,7 +70,7 @@ class TestResultPage extends ConsumerWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(HeroIcons.exclamation_circle, size: 64, color: Colors.red),
+              Icon(HeroIcons.exclamation_circle, size: 64, color: Theme.of(context).colorScheme.error),
               const SizedBox(height: 16),
               Text(
                 l10n.error(state.message),
@@ -191,7 +191,7 @@ class _ModernResultView extends StatelessWidget {
                       if (testResult.possibleSubstances.isEmpty)
                         Text(
                           l10n.unknownSubstance,
-                          style: theme.textTheme.bodyLarge?.copyWith(color: Colors.red),
+                          style: theme.textTheme.bodyLarge?.copyWith(color: theme.colorScheme.error),
                         ),
                     ],
                   ),
@@ -245,8 +245,9 @@ class _ModernResultView extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                       minimumSize: const Size(240, 56),
                       backgroundColor: theme.colorScheme.primary,
-                      foregroundColor: Colors.white,
-                      elevation: 0,
+                      foregroundColor: theme.colorScheme.onPrimary,
+                      elevation: 4,
+                      shadowColor: theme.colorScheme.primary.withOpacity(0.5),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                     ),
                     child: Text(
@@ -355,7 +356,7 @@ class _SubstanceItem extends StatelessWidget {
               ),
             ),
           ),
-          const Icon(HeroIcons.chevron_right, size: 16, color: Colors.grey),
+          Icon(HeroIcons.chevron_right, size: 16, color: theme.colorScheme.onSurfaceVariant),
         ],
       ),
     );

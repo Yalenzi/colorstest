@@ -80,7 +80,7 @@ class _SafetyDetailsCard extends ConsumerWidget {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: Colors.grey.shade300),
+        side: BorderSide(color: theme.dividerColor.withOpacity(0.2)),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),

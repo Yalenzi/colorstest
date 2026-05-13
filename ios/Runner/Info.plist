@@ -63,27 +63,32 @@
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 
-	<!-- Google Sign In -->
-
+	<!-- Google Sign-In: REVERSED_CLIENT_ID for OAuth callback -->
+	<!-- This MUST match REVERSED_CLIENT_ID in GoogleService-Info.plist exactly -->
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
-
+			<key>CFBundleURLName</key>
+			<string>com.yousef.ctds.google-sign-in</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
+				<!-- REVERSED_CLIENT_ID from GoogleService-Info.plist -->
 				<string>com.googleusercontent.apps.76342007759-mon4usabeh4a93i12i48eq6maj5qcdm5</string>
 			</array>
 		</dict>
 	</array>
 
+	<!-- Google Sign-In: GIDClientID (REQUIRED for GoogleSignIn SDK 7.0+) -->
 	<key>GIDClientID</key>
 	<string>76342007759-mon4usabeh4a93i12i48eq6maj5qcdm5.apps.googleusercontent.com</string>
 
+	<!-- App Privacy: Encryption -->
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 
+	<!-- Privacy Descriptions -->
 	<key>NSCameraUsageDescription</key>
 	<string>ReagentKit needs camera access to analyze reagent test results using AI.</string>
 
@@ -93,11 +98,14 @@
 	<key>NSMicrophoneUsageDescription</key>
 	<string>ReagentKit needs microphone access for video capture if needed during testing.</string>
 
+	<!-- URL Schemes for LSApplicationQueriesSchemes -->
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>https</string>
 		<string>http</string>
 		<string>mailto</string>
+		<string>googlegmail</string>
+		<string>googleusercontent</string>
 	</array>
 
 </dict>

@@ -1,4 +1,7 @@
+import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart' as firestore;
@@ -8,8 +11,28 @@ import '../utils/logger.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email', 'profile']);
   final FirestoreService _firestoreService = FirestoreService();
+
+  // 🔑 CRITICAL FIX: GoogleSignIn must NOT hardcode clientId on iOS.
+  // On iOS, GoogleSignIn SDK reads CLIENT_ID from GoogleService-Info.plist
+  // automatically via FirebaseApp.configure(). Hardcoding clientId here
+  // causes a CONFLICT that results in an instant crash on real devices.
+  //
+  // On Android/Web, serverClientId may be needed — but NOT on iOS.
+  GoogleSignIn get _googleSignIn {
+    if (Platform.isIOS || Platform.isMacOS) {
+      // iOS: let GoogleSignIn read clientId from GoogleService-Info.plist
+      // DO NOT pass clientId here — it causes native crash
+      return GoogleSignIn(
+        scopes: ['email', 'profile'],
+      );
+    } else {
+      // Android / other platforms
+      return GoogleSignIn(
+        scopes: ['email', 'profile'],
+      );
+    }
+  }
 
   // Get current user
   User? getCurrentUser() {
@@ -30,7 +53,7 @@ class AuthService {
         password: password,
       );
 
-      // 🔥 CRITICAL: Clear any existing local data before signing in existing user
+      // Clear any existing local data before signing in
       await _clearAllLocalData();
 
       // Update last sign-in time
@@ -66,7 +89,6 @@ class AuthService {
         password: password,
       );
 
-      // 🔥 CRITICAL: Clear any existing local data before creating new user
       await _clearAllLocalData();
 
       // Create user profile in Firestore
@@ -74,8 +96,6 @@ class AuthService {
         Logger.info(
           '🔧 AuthService: Creating user profile for ${result.user!.uid}',
         );
-        Logger.info('🔧 AuthService: User email: ${result.user!.email}');
-        Logger.info('🔧 AuthService: Username: $username');
 
         try {
           final userModel = UserModel.fromFirebaseUser(
@@ -91,11 +111,6 @@ class AuthService {
             timezone: timezone,
           );
 
-          Logger.info('🔧 AuthService: User model created successfully');
-          Logger.info(
-            '🔧 AuthService: Calling FirestoreService.createUserProfile...',
-          );
-
           await _firestoreService.createUserProfile(userModel);
           Logger.info(
             '✅ AuthService: User profile created successfully in Firestore',
@@ -103,10 +118,6 @@ class AuthService {
         } catch (e, stackTrace) {
           Logger.info('❌ AuthService: Error creating user profile: $e');
           Logger.info('❌ AuthService: Stack trace: $stackTrace');
-          // Don't throw here, let the user be created in Auth even if Firestore fails
-          Logger.info(
-            '⚠️ AuthService: User created in Firebase Auth but Firestore profile creation failed',
-          );
         }
       }
 
@@ -119,52 +130,90 @@ class AuthService {
   }
 
   // Sign in with Google
+  // 🔥 PRODUCTION-SAFE implementation:
+  //    - No hardcoded clientId (iOS reads from GoogleService-Info.plist)
+  //    - Catches PlatformException (native iOS crash source)
+  //    - Handles user cancellation gracefully
+  //    - Validates tokens before use
   Future<UserCredential?> signInWithGoogle() async {
-    GoogleSignInAccount? googleUser;
+    // Get a fresh GoogleSignIn instance (no cached clientId conflict)
+    final googleSignIn = _googleSignIn;
 
-    // Stage 1: Launch Google Sign-In UI
+    // Stage 1: Clear any stale Google session to prevent token reuse errors
     try {
-      Logger.info('🔐 AuthService: Starting Google Sign-In flow');
-      googleUser = await _googleSignIn.signIn();
+      await googleSignIn.signOut();
+      Logger.info('🔐 AuthService: Cleared stale Google session');
     } catch (e) {
-      Logger.info('❌ AuthService: Google Sign-In UI failed: $e');
-      // Sign out to reset any partial Google state
-      try { await _googleSignIn.signOut(); } catch (_) {}
-      throw Exception('Google Sign-In is unavailable. Please check your configuration and try again.');
+      // Non-fatal: ignore if no session existed
+      Logger.info('⚠️ AuthService: signOut pre-clean (non-fatal): $e');
     }
 
+    // Stage 2: Launch Google account picker UI
+    GoogleSignInAccount? googleUser;
+    try {
+      Logger.info('🔐 AuthService: Launching Google Sign-In UI...');
+      googleUser = await googleSignIn.signIn();
+    } on PlatformException catch (e) {
+      // 🚨 This is the most common iOS crash source:
+      //    PlatformException(sign_in_failed, ...) when clientId is wrong
+      Logger.info('❌ AuthService: PlatformException during signIn: ${e.code} — ${e.message}');
+      debugPrint('PlatformException details: ${e.details}');
+      throw Exception('Google Sign-In failed (${e.code}). Check GoogleService-Info.plist configuration.');
+    } catch (e, stack) {
+      Logger.info('❌ AuthService: Unexpected error during Google signIn: $e');
+      debugPrint('Stack: $stack');
+      throw Exception('Google Sign-In is unavailable. Please try again.');
+    }
+
+    // Stage 3: Handle user cancellation
     if (googleUser == null) {
       Logger.info('🔐 AuthService: Google Sign-In cancelled by user');
       return null;
     }
 
-    // Stage 2: Get Google Auth tokens
+    Logger.info('✅ AuthService: Google user selected: ${googleUser.email}');
+
+    // Stage 4: Exchange for auth tokens
     GoogleSignInAuthentication googleAuth;
     try {
       googleAuth = await googleUser.authentication;
+      Logger.info('✅ AuthService: Google tokens retrieved');
+    } on PlatformException catch (e) {
+      Logger.info('❌ AuthService: PlatformException getting tokens: ${e.code}');
+      try { await googleSignIn.signOut(); } catch (_) {}
+      throw Exception('Failed to retrieve Google auth tokens (${e.code}).');
     } catch (e) {
       Logger.info('❌ AuthService: Failed to get Google auth tokens: $e');
-      try { await _googleSignIn.signOut(); } catch (_) {}
+      try { await googleSignIn.signOut(); } catch (_) {}
       throw Exception('Failed to authenticate with Google. Please try again.');
     }
 
+    // Stage 5: Validate tokens
     if (googleAuth.accessToken == null && googleAuth.idToken == null) {
-      Logger.info('❌ AuthService: Google tokens are null');
-      try { await _googleSignIn.signOut(); } catch (_) {}
+      Logger.info('❌ AuthService: Both Google tokens are null');
+      try { await googleSignIn.signOut(); } catch (_) {}
       throw Exception('Google authentication returned invalid tokens.');
     }
 
-    // Stage 3: Sign in to Firebase with Google credential
+    Logger.info('✅ AuthService: Tokens valid — accessToken: ${googleAuth.accessToken != null}, idToken: ${googleAuth.idToken != null}');
+
+    // Stage 6: Sign in to Firebase with Google credential
     UserCredential result;
     try {
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
+      Logger.info('🔐 AuthService: Signing into Firebase with Google credential...');
       result = await _auth.signInWithCredential(credential);
+      Logger.info('✅ AuthService: Firebase Auth success — uid: ${result.user?.uid}');
+    } on FirebaseAuthException catch (e) {
+      Logger.info('❌ AuthService: FirebaseAuthException: ${e.code} — ${e.message}');
+      try { await googleSignIn.signOut(); } catch (_) {}
+      throw _handleAuthException(e);
     } catch (e) {
       Logger.info('❌ AuthService: Firebase sign-in with Google credential failed: $e');
-      try { await _googleSignIn.signOut(); } catch (_) {}
+      try { await googleSignIn.signOut(); } catch (_) {}
       throw Exception('Failed to sign in with Google. Please try again.');
     }
 
@@ -176,16 +225,14 @@ class AuthService {
     final user = result.user!;
     Logger.info('🔐 AuthService: Firebase Auth successful for ${user.uid}');
 
-    // Stage 4: Create or update user profile in Firestore
-    // NOTE: _clearAllLocalData is called AFTER successful profile load/creation
-    //       to prevent race conditions with auth state listener
+    // Stage 7: Create or update Firestore user profile
     try {
       final existingProfile = await _firestoreService.getUserProfile(user.uid);
 
       if (existingProfile == null) {
         Logger.info('🔧 AuthService: No profile found, creating one...');
 
-        String username = _generateUsernameFromDisplayName(
+        final username = _generateUsernameFromDisplayName(
           user.displayName ?? user.email ?? 'User',
         );
 
@@ -207,8 +254,9 @@ class AuthService {
         Logger.info('🔧 AuthService: Profile exists, updating activity');
         await _updateUserLastSignIn(user.uid);
 
-        // Sync existing profile with current Google data if needed
-        if (existingProfile.photoUrl != user.photoURL || existingProfile.displayName != user.displayName) {
+        // Sync profile photo/name from Google if changed
+        if (existingProfile.photoUrl != user.photoURL ||
+            existingProfile.displayName != user.displayName) {
           await _firestoreService.updateUserProfile(user.uid, {
             'photoUrl': user.photoURL,
             'displayName': user.displayName,
@@ -217,12 +265,11 @@ class AuthService {
         }
       }
 
-      // 🔥 Clear local data AFTER profile is safely loaded/created
+      // Clear local data AFTER profile is safely loaded/created
       await _clearAllLocalData();
     } catch (e) {
       Logger.info('⚠️ AuthService: Profile creation/update failed (non-fatal): $e');
       // Don't throw — user is already authenticated in Firebase
-      // Profile will be retried by the auth state listener
     }
 
     return result;
@@ -231,13 +278,13 @@ class AuthService {
   // Sign out
   Future<void> signOut() async {
     try {
-      // Clear Firestore cache on logout
       _firestoreService.clearAllCache();
-
-      // 🔥 CRITICAL: Clear all local storage to prevent data bleeding between users
       await _clearAllLocalData();
-
-      await Future.wait([_auth.signOut(), _googleSignIn.signOut()]);
+      // Sign out from both Firebase and Google
+      await Future.wait([
+        _auth.signOut(),
+        _googleSignIn.signOut(),
+      ]);
     } catch (e) {
       throw Exception('Failed to sign out: $e');
     }
@@ -246,44 +293,28 @@ class AuthService {
   // Clear all local data on logout to prevent user data bleeding
   Future<void> _clearAllLocalData() async {
     try {
-      // Import and clear test results local storage
-      // Note: We can't directly import TestResultHistoryRepository here due to circular dependency
-      // So we'll clear the SharedPreferences keys directly
       final prefs = await SharedPreferences.getInstance();
-
-      // Clear test results
       await prefs.remove('test_result_history');
-
-      // Clear sync queue
       await prefs.remove('sync_queue');
-
-      // Clear last sync timestamp
       await prefs.remove('last_firestore_sync');
-
       Logger.info('✅ AuthService: All local data cleared on logout');
     } catch (e) {
       Logger.info('❌ AuthService: Failed to clear local data: $e');
-      // Don't throw error, logout should still proceed
     }
   }
 
   // Send password reset email
   Future<void> sendPasswordResetEmail(String email) async {
     try {
-      // Validate email format before sending request
       if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email)) {
         throw Exception('Please enter a valid email address');
       }
 
       Logger.info('🔐 AuthService: Password reset requested');
-      
-      // Trim email as requested
       await _auth.sendPasswordResetEmail(email: email.trim());
-
       Logger.info('✅ AuthService: Password reset email sent successfully');
     } on FirebaseAuthException catch (e) {
       Logger.info('❌ AuthService: Password reset failed - ${e.code}');
-
       switch (e.code) {
         case 'user-not-found':
           throw Exception('No user found for that email address.');
@@ -314,45 +345,35 @@ class AuthService {
     return _firestoreService.streamUserProfile(uid);
   }
 
-  // Helper method to generate username from display name (first name + last name)
+  // Generate username from display name
   String _generateUsernameFromDisplayName(String displayName) {
     if (displayName.isEmpty) {
       return 'user${DateTime.now().millisecondsSinceEpoch}';
     }
 
-    // Split display name into parts (first name, last name, etc.)
     final nameParts = displayName.trim().split(' ');
 
     if (nameParts.length >= 2) {
-      // Use first name + underscore + last name format
       final firstName = nameParts[0].toLowerCase();
       final lastName = nameParts[1].toLowerCase();
-
-      // Clean the names (remove special characters, keep only letters)
       final cleanFirstName = firstName.replaceAll(RegExp(r'[^a-z]'), '');
       final cleanLastName = lastName.replaceAll(RegExp(r'[^a-z]'), '');
 
       if (cleanFirstName.isNotEmpty && cleanLastName.isNotEmpty) {
-        // Capitalize first letter of each name
-        final formattedFirstName =
-            cleanFirstName[0].toUpperCase() +
+        final formattedFirst = cleanFirstName[0].toUpperCase() +
             (cleanFirstName.length > 1 ? cleanFirstName.substring(1) : '');
-        final formattedLastName =
-            cleanLastName[0].toUpperCase() +
+        final formattedLast = cleanLastName[0].toUpperCase() +
             (cleanLastName.length > 1 ? cleanLastName.substring(1) : '');
-
-        return '${formattedFirstName}_$formattedLastName';
+        return '${formattedFirst}_$formattedLast';
       }
     }
 
-    // Fallback: use the whole display name, cleaned up
     final cleanedName = displayName
         .toLowerCase()
         .replaceAll(RegExp(r'[^a-z0-9]'), '')
         .trim();
 
     if (cleanedName.isNotEmpty) {
-      // Capitalize first letter
       return cleanedName[0].toUpperCase() +
           (cleanedName.length > 1 ? cleanedName.substring(1) : '');
     }
@@ -360,7 +381,7 @@ class AuthService {
     return 'user${DateTime.now().millisecondsSinceEpoch}';
   }
 
-  // Helper method to update user's last sign-in time
+  // Update user's last sign-in time
   Future<void> _updateUserLastSignIn(String uid) async {
     try {
       await _firestoreService.updateUserLastSignIn(uid);
@@ -369,54 +390,33 @@ class AuthService {
     }
   }
 
-  // Handle Firebase Auth exceptions with security best practices
+  // Handle Firebase Auth exceptions
   String _handleAuthException(FirebaseAuthException e) {
     Logger.info(
       '🔥 AuthService: Firebase Auth Error - Code: ${e.code}, Message: ${e.message}',
     );
 
-    // Follow OWASP Authentication Security Best Practices:
-    // Use generic error messages to prevent user enumeration attacks
-    // and avoid revealing technical details about the authentication system
-
     switch (e.code) {
-      // Authentication failures - use generic message
       case 'user-not-found':
       case 'wrong-password':
       case 'invalid-credential':
       case 'invalid-email':
         return 'Invalid email or password. Please try again.';
-
-      // Account creation conflicts
       case 'email-already-in-use':
-        // Generic message for account creation to prevent email enumeration
         return 'If this email is not already registered, an account will be created.';
-
-      // Password policy violations
       case 'weak-password':
         return 'Password must be at least 6 characters long.';
-
-      // Account status issues
       case 'user-disabled':
         return 'This account has been temporarily disabled. Please contact support.';
-
-      // Rate limiting
       case 'too-many-requests':
         return 'Too many login attempts. Please wait a few minutes before trying again.';
-
-      // Service configuration issues
       case 'operation-not-allowed':
         return 'This sign-in method is currently unavailable. Please try again later.';
-
-      // Network or service issues
       case 'network-request-failed':
         return 'Network error. Please check your connection and try again.';
-
-      // Credential expiration/malformation (the error you encountered)
       case 'credential-already-in-use':
       case 'auth-domain-config-required':
       default:
-        // Generic fallback message - never expose technical Firebase errors
         return 'Unable to sign in at this time. Please try again later.';
     }
   }

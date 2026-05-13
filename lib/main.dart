@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:reagentkit/l10n/app_localizations.dart';
+import 'core/theme/app_theme.dart';
 import 'core/config/get_it_config.dart';
 import 'core/navigation/auth_wrapper.dart';
 import 'features/settings/presentation/providers/settings_providers.dart';
@@ -53,8 +54,8 @@ class ReagentTestingApp extends ConsumerWidget {
       navigatorKey: navigatorKey,
       scaffoldMessengerKey: scaffoldMessengerKey,
       title: 'ReagentKit',
-      theme: _buildLightTheme(),
-      darkTheme: _buildDarkTheme(),
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
       themeMode: themeMode,
       locale: locale,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -70,94 +71,6 @@ class ReagentTestingApp extends ConsumerWidget {
       },
 
       debugShowCheckedModeBanner: false,
-    );
-  }
-
-  ThemeData _buildLightTheme() {
-    return ThemeData(
-      useMaterial3: true,
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: const Color(0xFF3B82F6), // Professional blue
-        brightness: Brightness.light,
-      ),
-      appBarTheme: const AppBarTheme(
-        elevation: 0,
-        backgroundColor: Colors.white,
-        surfaceTintColor: Colors.transparent,
-        foregroundColor: Color(0xFF1E293B),
-        centerTitle: true,
-        iconTheme: IconThemeData(color: Color(0xFF1E293B), size: 24),
-        systemOverlayStyle: null, // Use default system overlay
-      ),
-      scaffoldBackgroundColor: const Color(0xFFF8FAFC),
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-        ),
-      ),
-      inputDecorationTheme: InputDecorationTheme(
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Color(0xFF3B82F6), width: 2),
-        ),
-        filled: true,
-        fillColor: const Color(0xFFF8FAFC),
-      ),
-    );
-  }
-
-  ThemeData _buildDarkTheme() {
-    return ThemeData(
-      useMaterial3: true,
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: const Color(0xFF3B82F6), // Professional blue
-        brightness: Brightness.dark,
-      ),
-      appBarTheme: const AppBarTheme(
-        elevation: 0,
-        backgroundColor: Color(0xFF0F172A),
-        surfaceTintColor: Colors.transparent,
-        foregroundColor: Color(0xFFE2E8F0),
-        centerTitle: true,
-        iconTheme: IconThemeData(color: Color(0xFFE2E8F0), size: 24),
-        systemOverlayStyle: null, // Use default system overlay
-      ),
-      scaffoldBackgroundColor: const Color(0xFF0F172A),
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-        ),
-      ),
-      inputDecorationTheme: InputDecorationTheme(
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Color(0xFF334155)),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Color(0xFF334155)),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Color(0xFF3B82F6), width: 2),
-        ),
-        filled: true,
-        fillColor: const Color(0xFF1E293B),
-      ),
     );
   }
 }

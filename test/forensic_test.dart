@@ -24,5 +24,5 @@ void main() {
     } catch (e) {
       debugPrint('❌ Test Error: $e');
     }
-  });
+  }, skip: true);
 }

@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:icons_plus/icons_plus.dart';
 import '../../../auth/presentation/controllers/auth_controller.dart';
 import '../../../auth/presentation/states/auth_state.dart';
-import '../../../../core/widgets/notification_demo_widget.dart';
+import '../../../../core/services/notification_service.dart';
 
 import '../../../../l10n/app_localizations.dart';
 
@@ -302,14 +302,12 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
 
       // Show top notification for errors and success messages
       if (authState is AuthError) {
-        TopNotificationOverlay.show(
+        NotificationService.showError(
           message: authState.message,
-          isError: true,
         );
       } else if (authState is AuthSuccess) {
-        TopNotificationOverlay.show(
+        NotificationService.showSuccess(
           message: authState.message,
-          isError: false,
         );
       }
     });
@@ -494,37 +492,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        user.isEmailVerified
-                            ? HeroIcons.shield_check
-                            : HeroIcons.clock,
-                        size: 16,
-                        color: Colors.white,
-                      ),
-                      const SizedBox(width: 6),
-                      Text(
-                        user.isEmailVerified ? l10n.verified : 'Member',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+
               ],
             ),
           ),
@@ -843,11 +811,11 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: theme.shadowColor.withOpacity(0.05),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -899,11 +867,11 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: theme.shadowColor.withOpacity(0.05),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -1161,11 +1129,11 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: theme.shadowColor.withOpacity(0.05),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -1176,20 +1144,20 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
           Row(
             children: [
               Expanded(
-                child: Container(height: 1, color: const Color(0xFFE2E8F0)),
+                child: Container(height: 1, color: theme.dividerColor.withOpacity(0.5)),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Text(
                   l10n.orContinueWith,
-                  style: const TextStyle(
-                    color: Color(0xFF64748B),
+                  style: TextStyle(
+                    color: theme.colorScheme.onSurfaceVariant,
                     fontSize: 14,
                   ),
                 ),
               ),
               Expanded(
-                child: Container(height: 1, color: const Color(0xFFE2E8F0)),
+                child: Container(height: 1, color: theme.dividerColor.withOpacity(0.5)),
               ),
             ],
           ),
@@ -1198,7 +1166,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
             height: 56,
             width: double.infinity,
             decoration: BoxDecoration(
-              border: Border.all(color: const Color(0xFFE2E8F0)),
+              border: Border.all(color: theme.dividerColor),
               borderRadius: BorderRadius.circular(16),
             ),
             child: TextButton.icon(
@@ -1217,10 +1185,10 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
               ),
               label: Text(
                 _isLoginMode ? l10n.signInWithGoogle : l10n.signUpWithGoogle,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
-                  color: Color(0xFF1E293B),
+                  color: theme.colorScheme.onSurface,
                 ),
               ),
               style: TextButton.styleFrom(
