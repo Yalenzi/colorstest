@@ -33,14 +33,8 @@ class AppTheme {
         ),
         systemOverlayStyle: SystemUiOverlayStyle.dark, // Status bar icons
       ),
-      cardTheme: CardThemeData(
-        color: AppColors.lightSurface,
-        elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-          side: const BorderSide(color: AppColors.lightBorder, width: 1),
-        ),
-      ),
+      // Temporarily removed for debugging
+      // cardTheme: CardThemeData(...),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           elevation: 0,
@@ -120,14 +114,8 @@ class AppTheme {
         ),
         systemOverlayStyle: SystemUiOverlayStyle.light, // Status bar icons
       ),
-      cardTheme: CardThemeData(
-        color: AppColors.darkSurface,
-        elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-          side: const BorderSide(color: AppColors.darkBorder, width: 1),
-        ),
-      ),
+      // Temporarily removed for debugging
+      // cardTheme: CardThemeData(...),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           elevation: 0,
