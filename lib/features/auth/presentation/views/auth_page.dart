@@ -372,7 +372,10 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                 ? SizedBox(
                     height: 20,
                     width: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2, color: theme.colorScheme.onPrimary),
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: theme.colorScheme.onPrimary,
+                    ),
                   )
                 : Text(
                     _isLoginMode ? l10n.signIn : l10n.signUp,
@@ -499,6 +502,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
   }
 
   Widget _buildSuccessMessage(String message) {
+    final theme = Theme.of(context);
     final successColor = const Color(0xFF10B981); // Emerald Green
     return Container(
       padding: const EdgeInsets.all(16.0),
@@ -514,7 +518,10 @@ class _AuthPageState extends ConsumerState<AuthPage> {
           Expanded(
             child: Text(
               message,
-              style: TextStyle(color: successColor, fontWeight: FontWeight.w500),
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: successColor,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
           IconButton(
