@@ -555,7 +555,7 @@ packages:
     source: hosted
     version: "6.1.35"
   google_sign_in_ios:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
       name: google_sign_in_ios
       sha256: "102005f498ce18442e7158f6791033bbc15ad2dcc0afa4cf4752e2722a516c96"

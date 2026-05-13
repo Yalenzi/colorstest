@@ -55,18 +55,12 @@ jobs:
       - name: Install Flutter dependencies
         run: flutter pub get
 
-      - name: Force GoogleSignIn 7.1.0 in podspec
-        run: |
-          find ios/.symlinks/plugins/google_sign_in_ios -name "*.podspec" -exec sed -i '' "s/'GoogleSignIn', '~> 8.0'/'GoogleSignIn', '~> 7.1'/g" {} + || true
-          find ios/.symlinks/plugins/google_sign_in_ios -name "*.podspec" -exec sed -i '' "s/'GoogleSignIn', '>= 8.0'/'GoogleSignIn', '~> 7.1'/g" {} + || true
-
-      - name: Update CocoaPods
+      - name: Clean Pods
         run: |
           cd ios
-          # Retry pod repo update up to 3 times to mitigate CDN timeouts
-          for i in 1 2 3; do pod repo update && break || sleep 5; done
-          # Pre-install pods with retries to ensure dependencies are resolved before flutter build ipa
-          for i in 1 2 3; do pod install && break || sleep 5; done
+          rm -rf Pods Podfile.lock
+          # Re-fetch dependencies to ensure fresh state
+          flutter pub get
 
       - name: Restore Firebase iOS config
         env:

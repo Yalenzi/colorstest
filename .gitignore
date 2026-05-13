@@ -72,3 +72,4 @@ ios/DerivedData/
 *.sh
 .!*
 
+ios/Podfile.lock
