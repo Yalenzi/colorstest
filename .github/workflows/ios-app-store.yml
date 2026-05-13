@@ -55,6 +55,11 @@ jobs:
       - name: Install Flutter dependencies
         run: flutter pub get
 
+      - name: Force GoogleSignIn 7.1.0 in podspec
+        run: |
+          find ios/.symlinks/plugins/google_sign_in_ios -name "*.podspec" -exec sed -i '' "s/'GoogleSignIn', '~> 8.0'/'GoogleSignIn', '~> 7.1'/g" {} + || true
+          find ios/.symlinks/plugins/google_sign_in_ios -name "*.podspec" -exec sed -i '' "s/'GoogleSignIn', '>= 8.0'/'GoogleSignIn', '~> 7.1'/g" {} + || true
+
       - name: Update CocoaPods
         run: |
           cd ios
