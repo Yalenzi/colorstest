@@ -246,6 +246,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
 
   Widget _buildAuthForm(AuthState authState, AppLocalizations l10n) {
     final isLoading = authState is AuthLoading;
+    final theme = Theme.of(context);
 
     return Form(
       key: _formKey,
@@ -368,10 +369,10 @@ class _AuthPageState extends ConsumerState<AuthPage> {
               ),
             ),
             child: isLoading
-                ? const SizedBox(
+                ? SizedBox(
                     height: 20,
                     width: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2, color: Theme.of(context).colorScheme.onPrimary),
+                    child: CircularProgressIndicator(strokeWidth: 2, color: theme.colorScheme.onPrimary),
                   )
                 : Text(
                     _isLoginMode ? l10n.signIn : l10n.signUp,
@@ -498,7 +499,6 @@ class _AuthPageState extends ConsumerState<AuthPage> {
   }
 
   Widget _buildSuccessMessage(String message) {
-    final theme = Theme.of(context);
     final successColor = const Color(0xFF10B981); // Emerald Green
     return Container(
       padding: const EdgeInsets.all(16.0),
