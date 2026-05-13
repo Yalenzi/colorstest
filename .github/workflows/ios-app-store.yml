@@ -58,8 +58,10 @@ jobs:
       - name: Update CocoaPods
         run: |
           cd ios
-          pod repo update
-          rm -f Podfile.lock
+          # Retry pod repo update up to 3 times to mitigate CDN timeouts
+          for i in 1 2 3; do pod repo update && break || sleep 5; done
+          # Pre-install pods with retries to ensure dependencies are resolved before flutter build ipa
+          for i in 1 2 3; do pod install && break || sleep 5; done
 
       - name: Restore Firebase iOS config
         env:

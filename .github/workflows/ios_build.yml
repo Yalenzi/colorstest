@@ -62,6 +62,13 @@ jobs:
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
 
+      - name: Pre-install CocoaPods
+        if: github.event_name != 'pull_request' && env.HAS_SECRETS == 'true'
+        run: |
+          cd ios
+          for i in 1 2 3; do pod repo update && break || sleep 5; done
+          for i in 1 2 3; do pod install && break || sleep 5; done
+
       - name: Build IPA
         if: github.event_name != 'pull_request' && env.HAS_SECRETS == 'true'
         run: flutter build ipa --release --export-options-plist=ios/ExportOptions.plist
