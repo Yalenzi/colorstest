@@ -42,9 +42,22 @@ jobs:
           test -d ios || (echo "ios directory not found in repository root" && exit 1)
           test -f ios/Podfile || (echo "ios/Podfile not found" && exit 1)
 
+      - name: Set up Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '26.5'
+
+      - name: Ensure iOS 26.5 Platform is installed
+        run: |
+          if ! xcrun --sdk iphoneos --show-sdk-version | grep -q "26.5"; then
+            echo "iOS 26.5 SDK not found, attempting to download..."
+            sudo xcodebuild -downloadPlatform iOS -version 26.5
+          else
+            echo "iOS 26.5 SDK is already installed."
+          fi
+
       - name: Show Xcode version
         run: |
-          sudo xcode-select -s /Applications/Xcode_26.5.app/Contents/Developer
           xcodebuild -version
           xcrun --sdk iphoneos --show-sdk-version
 
