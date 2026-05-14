@@ -27,35 +27,55 @@ env:
 jobs:
   build-ios:
     name: Build signed iOS IPA
-    runs-on: macos-15
+    runs-on: macos-26
     timeout-minutes: 60
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Force select stable Xcode version
+      - name: Discover and Force Select Xcode 26+
         run: |
-          sudo xcode-select -s /Applications/Xcode_16.4.app/Contents/Developer
+          echo "Checking available Xcode installations..."
+          ls /Applications | grep Xcode || true
+          
+          # Find the latest Xcode 26 version
+          XCODE_PATH=$(ls -d /Applications/Xcode_26*.app 2>/dev/null | sort -V | tail -n 1)
+          
+          if [ -z "$XCODE_PATH" ]; then
+            # Fallback to default Xcode if Xcode_26 naming pattern is different
+            XCODE_PATH="/Applications/Xcode.app"
+          fi
+          
+          echo "Selecting Xcode at: $XCODE_PATH"
+          sudo xcode-select -s "$XCODE_PATH/Contents/Developer"
+          
+          echo "Verifying SDK versions..."
           xcodebuild -version
-          xcodebuild -showsdks
+          
+          # Check for iOS 26 SDK specifically
+          if ! xcodebuild -showsdks | grep -q "iphoneos26"; then
+            echo "::error::iOS 26 SDK NOT FOUND. Current SDKs:"
+            xcodebuild -showsdks
+            exit 1
+          fi
+          
+          echo "SDK Verification Passed."
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: ${{ env.FLUTTER_CHANNEL }}
-          cache: true
+          cache: false # Disable cache for a truly clean build
 
-      - name: Install Flutter dependencies
+      - name: Full Clean Environment
         run: |
+          echo "Purging all stale build artifacts..."
           flutter clean
-          flutter pub get
-
-      - name: Install CocoaPods
-        run: |
+          rm -rf build
+          rm -rf ~/Library/Developer/Xcode/DerivedData
           cd ios
           rm -rf Pods Podfile.lock
-          pod install --repo-update
           cd ..
 
       - name: Restore Firebase iOS config
@@ -65,6 +85,14 @@ jobs:
           if [ -n "$IOS_GOOGLE_SERVICE_INFO_PLIST_BASE64" ]; then
             echo "$IOS_GOOGLE_SERVICE_INFO_PLIST_BASE64" | base64 --decode > ios/Runner/GoogleService-Info.plist
           fi
+
+      - name: Install Dependencies & CocoaPods
+        run: |
+          flutter pub get
+          cd ios
+          pod deintegrate
+          pod install --repo-update
+          cd ..
 
       - name: Validate required signing secrets
         env:
@@ -157,7 +185,8 @@ jobs:
             --release \
             --build-name "${{ inputs.build_name }}" \
             --build-number "${{ inputs.build_number }}" \
-            --export-options-plist "$RUNNER_TEMP/ExportOptions.plist"
+            --export-options-plist "$RUNNER_TEMP/ExportOptions.plist" \
+            --export-method app-store
 
       - name: Upload IPA artifact
         uses: actions/upload-artifact@v4
