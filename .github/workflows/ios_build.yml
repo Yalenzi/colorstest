@@ -81,6 +81,24 @@ jobs:
           for i in 1 2 3; do pod repo update && break || sleep 5; done
           for i in 1 2 3; do pod install && break || sleep 5; done
 
+      - name: Update Xcode project with Provisioning Profile
+        if: github.event_name != 'pull_request' && env.HAS_SECRETS == 'true'
+        run: |
+          PBXPROJ_PATH="ios/Runner.xcodeproj/project.pbxproj"
+          TEAM_ID="${{ env.TEAM_ID }}"
+          PROFILE_NAME="${{ env.profile_name }}"
+          
+          echo "Aggressively updating $PBXPROJ_PATH with Profile: $PROFILE_NAME"
+          
+          # 1. Inject settings into ALL buildSettings blocks
+          sed -i '' 's/buildSettings = {/buildSettings = {\n\t\t\t\tPROVISIONING_PROFILE_SPECIFIER = "'"$PROFILE_NAME"'";\n\t\t\t\tCODE_SIGN_IDENTITY = "Apple Distribution";\n\t\t\t\tCODE_SIGN_STYLE = Manual;\n\t\t\t\tProvisioningStyle = Manual;/g' "$PBXPROJ_PATH"
+          
+          # 2. Force DEVELOPMENT_TEAM to match our env
+          sed -i '' "s/DEVELOPMENT_TEAM = [^;]*;/DEVELOPMENT_TEAM = $TEAM_ID;/g" "$PBXPROJ_PATH"
+          
+          # 3. Ensure ProvisioningStyle is Manual everywhere
+          sed -i '' "s/ProvisioningStyle = Automatic;/ProvisioningStyle = Manual;/g" "$PBXPROJ_PATH"
+
       - name: Create ExportOptions.plist
         if: github.event_name != 'pull_request' && env.HAS_SECRETS == 'true'
         run: |
