@@ -10,11 +10,16 @@ on:
 jobs:
   build:
     name: Build iOS IPA
-    runs-on: macos-latest
+    runs-on: macos-15
     
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Diagnostics
+        run: |
+          xcodebuild -version
+          xcodebuild -showsdks
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -71,7 +76,7 @@ jobs:
 
       - name: Build IPA
         if: github.event_name != 'pull_request' && env.HAS_SECRETS == 'true'
-        run: flutter build ipa --release --export-options-plist=ios/ExportOptions.plist
+        run: flutter build ipa --release --export-method app-store
 
       - name: Upload to TestFlight
         if: github.event_name != 'pull_request' && env.HAS_SECRETS == 'true'
