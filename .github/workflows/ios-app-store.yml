@@ -185,8 +185,7 @@ jobs:
             --release \
             --build-name "${{ inputs.build_name }}" \
             --build-number "${{ inputs.build_number }}" \
-            --export-options-plist "$RUNNER_TEMP/ExportOptions.plist" \
-            --export-method app-store
+            --export-options-plist "$RUNNER_TEMP/ExportOptions.plist"
 
       - name: Upload IPA artifact
         uses: actions/upload-artifact@v4
