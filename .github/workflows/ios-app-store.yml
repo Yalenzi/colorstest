@@ -148,23 +148,72 @@ jobs:
 
 
 
-      - name: Update Xcode project with Provisioning Profile and Certificate Identity
+      - name: Create ExportOptions.plist
+        env:
+          PROFILE_NAME: ${{ steps.profile.outputs.name }}
+          TEAM_ID: ${{ env.TEAM_ID }}
         run: |
-          sed -i '' "s/DEVELOPMENT_TEAM = B4S7M6N5U5;/DEVELOPMENT_TEAM = B4S7M6N5U5;\n\t\t\t\tPROVISIONING_PROFILE_SPECIFIER = \"${{ steps.profile.outputs.name }}\";\n\t\t\t\tCODE_SIGN_IDENTITY = \"Apple Distribution\";\n\t\t\t\t\"CODE_SIGN_IDENTITY[sdk=iphoneos*]\" = \"Apple Distribution\";/g" ios/Runner.xcodeproj/project.pbxproj
+          mkdir -p ios/Runner
+          cat > ios/Runner/ExportOptions.plist <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key>
+            <string>app-store</string>
+            <key>teamID</key>
+            <string>$TEAM_ID</string>
+            <key>uploadSymbols</key>
+            <true/>
+            <key>uploadBitcode</key>
+            <false/>
+            <key>compileBitcode</key>
+            <false/>
+            <key>manageAppVersionAndBuildNumber</key>
+            <true/>
+            <key>signingStyle</key>
+            <string>manual</string>
+            <key>provisioningProfiles</key>
+            <dict>
+              <key>${{ env.BUNDLE_ID }}</key>
+              <string>$PROFILE_NAME</string>
+            </dict>
+          </dict>
+          </plist>
+          EOF
+          echo "Generated ExportOptions.plist:"
+          cat ios/Runner/ExportOptions.plist
 
       - name: Build IPA
         run: |
+          # Robustly handle build name and number for push vs workflow_dispatch
+          BUILD_NAME="${{ inputs.build_name }}"
+          if [ -z "$BUILD_NAME" ]; then BUILD_NAME="0.1.1"; fi
+          
+          BUILD_NUMBER="${{ inputs.build_number }}"
+          if [ -z "$BUILD_NUMBER" ]; then BUILD_NUMBER="${{ github.run_number }}"; fi
+          
+          echo "Building IPA with Name: $BUILD_NAME, Number: $BUILD_NUMBER"
+          
           flutter build ipa \
             --release \
-            --build-name "${{ inputs.build_name }}" \
-            --build-number "${{ inputs.build_number }}" \
-            --export-method app-store
+            --build-name "$BUILD_NAME" \
+            --build-number "$BUILD_NUMBER" \
+            --export-options-plist=ios/Runner/ExportOptions.plist
+
+      - name: List Build Directory
+        if: always()
+        run: |
+          echo "Listing build/ios/ipa contents:"
+          ls -R build/ios/ipa 2>/dev/null || echo "Directory build/ios/ipa not found"
+          echo "Listing build/ios contents:"
+          ls -R build/ios 2>/dev/null | head -n 20 || true
 
       - name: Upload IPA artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ios-ipa-${{ inputs.build_name }}-${{ inputs.build_number }}
-          path: build/ios/ipa/*.ipa
+          name: ios-ipa-${{ inputs.build_name || 'push' }}-${{ github.run_number }}
+          path: build/ios/ipa/
           if-no-files-found: error
 
       - name: Upload to TestFlight
@@ -178,8 +227,15 @@ jobs:
           API_KEY_PATH="$RUNNER_TEMP/private_keys/AuthKey_${APP_STORE_CONNECT_API_KEY_ID}.p8"
           echo "$APP_STORE_CONNECT_API_KEY_BASE64" | base64 --decode > "$API_KEY_PATH"
 
+          # Find the IPA file dynamically
+          IPA_PATH=$(find build/ios/ipa -name "*.ipa" | head -n 1)
+          if [ -z "$IPA_PATH" ]; then
+            echo "::error::No IPA file found for upload!"
+            exit 1
+          fi
+
           xcrun altool --upload-app \
             --type ios \
-            --file build/ios/ipa/*.ipa \
+            --file "$IPA_PATH" \
             --apiKey "$APP_STORE_CONNECT_API_KEY_ID" \
             --apiIssuer "$APP_STORE_CONNECT_API_ISSUER_ID"

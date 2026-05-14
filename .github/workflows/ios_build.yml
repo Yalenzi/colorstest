@@ -7,6 +7,10 @@ on:
     branches: [ main, master ]
   workflow_dispatch:
 
+env:
+  BUNDLE_ID: com.yousef.ctds
+  TEAM_ID: B4S7M6N5U5
+
 jobs:
   build:
     name: Build iOS IPA
@@ -67,6 +71,9 @@ jobs:
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
 
+          PROFILE_NAME="$(security cms -D -i "$PP_PATH" | plutil -extract Name raw -)"
+          echo "profile_name=$PROFILE_NAME" >> "$GITHUB_ENV"
+
       - name: Pre-install CocoaPods
         if: github.event_name != 'pull_request' && env.HAS_SECRETS == 'true'
         run: |
@@ -74,9 +81,41 @@ jobs:
           for i in 1 2 3; do pod repo update && break || sleep 5; done
           for i in 1 2 3; do pod install && break || sleep 5; done
 
+      - name: Create ExportOptions.plist
+        if: github.event_name != 'pull_request' && env.HAS_SECRETS == 'true'
+        run: |
+          mkdir -p ios/Runner
+          cat > ios/Runner/ExportOptions.plist <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key>
+            <string>app-store</string>
+            <key>teamID</key>
+            <string>${{ env.TEAM_ID }}</string>
+            <key>uploadSymbols</key>
+            <true/>
+            <key>uploadBitcode</key>
+            <false/>
+            <key>compileBitcode</key>
+            <false/>
+            <key>manageAppVersionAndBuildNumber</key>
+            <true/>
+            <key>signingStyle</key>
+            <string>manual</string>
+            <key>provisioningProfiles</key>
+            <dict>
+              <key>${{ env.BUNDLE_ID }}</key>
+              <string>${{ env.profile_name }}</string>
+            </dict>
+          </dict>
+          </plist>
+          EOF
+
       - name: Build IPA
         if: github.event_name != 'pull_request' && env.HAS_SECRETS == 'true'
-        run: flutter build ipa --release --export-method app-store
+        run: flutter build ipa --release --export-options-plist=ios/Runner/ExportOptions.plist
 
       - name: Upload to TestFlight
         if: github.event_name != 'pull_request' && env.HAS_SECRETS == 'true'
