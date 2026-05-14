@@ -146,34 +146,7 @@ jobs:
           echo "uuid=$PROFILE_UUID" >> "$GITHUB_OUTPUT"
           echo "name=$PROFILE_NAME" >> "$GITHUB_OUTPUT"
 
-      - name: Create export options
-        run: |
-          cat > "$RUNNER_TEMP/ExportOptions.plist" <<EOF
-          <?xml version="1.0" encoding="UTF-8"?>
-          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-          <plist version="1.0">
-          <dict>
-            <key>method</key>
-            <string>app-store</string>
-            <key>teamID</key>
-            <string>${TEAM_ID}</string>
-            <key>signingStyle</key>
-            <string>manual</string>
-            <key>provisioningProfiles</key>
-            <dict>
-              <key>${BUNDLE_ID}</key>
-              <string>${{ steps.profile.outputs.name }}</string>
-            </dict>
-            <key>compileBitcode</key>
-            <false/>
-            <key>stripSwiftSymbols</key>
-            <true/>
-            <key>uploadSymbols</key>
-            <true/>
-          </dict>
-          </plist>
-          EOF
-          plutil -lint "$RUNNER_TEMP/ExportOptions.plist"
+
 
       - name: Update Xcode project with Provisioning Profile and Certificate Identity
         run: |
@@ -185,7 +158,7 @@ jobs:
             --release \
             --build-name "${{ inputs.build_name }}" \
             --build-number "${{ inputs.build_number }}" \
-            --export-options-plist "$RUNNER_TEMP/ExportOptions.plist"
+            --export-method app-store
 
       - name: Upload IPA artifact
         uses: actions/upload-artifact@v4
